@@ -7,7 +7,7 @@ from src.Bot import Bot
 
 class TestBot(unittest.TestCase):
     
-    def __init__(self):
+    def set_up(self):
         self.bot = Bot(balance=1000)
     
     def test_buy(self):
