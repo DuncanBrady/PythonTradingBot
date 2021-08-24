@@ -1,2 +1,3 @@
 # PythonTradingBot
-First attempt at a trading bot 
+
+First attempt at a trading bot
