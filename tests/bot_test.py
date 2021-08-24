@@ -22,7 +22,7 @@ class TestBot(unittest.TestCase):
         bot = Bot(balance = 1000, position = [])
         bot.buy("EXR", 1.00, 500)
         bot.sell("EXR", 2.00)
-        self.assertEqual(bot.balance, 1500)
+        self.assertEqual(bot.get_balance(), 1500)
 
 
 
