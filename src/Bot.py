@@ -22,7 +22,15 @@ class Bot:
         self.balance = balance
         self.stop_loss = stop_loss
         self.position = position
-        
+    
+    @staticmethod
+    def create_position_object(code, price, num_shares):
+        return {
+            "code" : code,
+            "value" : price,
+            "num_shares" : num_shares
+        }
+    
     def set_stop_loss(self, stop_loss):
         self.stop_loss = stop_loss
 
@@ -39,17 +47,17 @@ class Bot:
         return self.position
     
     def buy(self, code, price, num_shares):
-        if balance - price * num_shares < 0:
+        if self.balance - price * num_shares < 0:
             raise Exception("Not enough money to buy")
 
         self.set_balance(self.get_balance() - (price * num_shares))
-        position.append(create_position_object(code,price,num_shares))    
+        self.position.append(self.create_position_object(code,price,num_shares))    
 
     def sell(self, code, sell_price):
         
         sell_object = [x for x in self.get_position() if x['code'] == code][0]
         self.set_balance(self.get_balance + sell_price * sell_object['num_shares'])
-        position.remove(sell_object)
+        self.position.remove(sell_object)
     
     
     
@@ -59,10 +67,4 @@ class Bot:
     
     
     
-    @staticmethod
-    def create_position_object(code, price, num_shares):
-        return {
-            "code" : code,
-            "value" : price,
-            "num_shares" : num_shares
-        }
+    
