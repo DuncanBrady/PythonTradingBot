@@ -22,10 +22,57 @@ def check_stoploss(self):
 '''
 
 class Bot:
-    def __init__(self, balance=0.0, stop_loss=.2, position=[]):
+    def __init__(self, balance=0.0, stop_loss=.125, position=[], position_limit = 10):
         self.balance = balance
         self.stop_loss = stop_loss
         self.position = position
+        self.POSITION_LIMIT = position_limit
+    
+        
+    '''
+        Getters and Setters
+    '''
+    def set_stop_loss(self, stop_loss):
+        self.stop_loss = stop_loss
+
+    def set_balance(self, balance):
+        self.balance = balance
+        
+    def set_position(self, position):
+        self.position = position
+    
+    def get_balance(self):
+        return self.balance
+
+    def get_stop_loss(self):
+        return self.stop_loss
+
+    def get_position(self):
+        return self.position
+    
+    '''
+        Static methods
+    '''
+    @staticmethod
+    def format_data(data):
+        """Formats the data in a format the bot can understand
+
+        Args:
+            data (json/dict): data that is to be formatted
+
+        Returns:
+            list[dict]: list of dicts the bot can use to update its state
+        """
+        list_data = []
+        for key in data:
+            stock_object = {
+                "code" : key,
+                "price" : data[key]['close']
+            }
+            
+            list_data.append(stock_object)
+
+        return list_data
     
     @staticmethod
     def create_position_object(code, price, money_invested):
@@ -59,6 +106,7 @@ class Bot:
         share_object['num_shares'] += money_invested / price
         share_object['value'] = share_object['total_invested'] / share_object['num_shares']
     
+
     def buy(self, code, price, money_invested):
         """Buys a particular stock code at a given price, which a portion of money invested
 
@@ -72,6 +120,8 @@ class Bot:
         """
         if self.balance - money_invested < 0:
             raise Exception("Not enough money to buy")
+        if len(self.get_position()) >= self.POSITION_LIMIT:
+            raise Exception("To many stocks in position")
 
         self.set_balance(self.get_balance() - money_invested)
         
@@ -128,9 +178,6 @@ class Bot:
         for my_position in to_sell:
             self.sell(my_position['code'], my_position['current_price'])
     
-    
-    
-    
     def sell(self, code, sell_price):
         """Sells a particular stock at a given sell price
 
@@ -145,24 +192,69 @@ class Bot:
         self.set_balance(self.get_balance() + sell_price * sell_object['num_shares'])
         self.position.remove(sell_object)
 
-    
-    '''
-        Getters and Setters
-    '''
-    def set_stop_loss(self, stop_loss):
-        self.stop_loss = stop_loss
 
-    def set_balance(self, balance):
-        self.balance = balance
+    def periodic_call_api(self, url):
+        """Makes a periodic request to some api to get stock information
+
+        Args:
+            url (string): url of the given api
+        """
         
-    def set_position(self, position):
-        self.position = position
+        # Example data sent back by api call
+        data = {
+            "EXR" : {
+                "open" : 1.00,
+                "high" : 2.00,
+                "close" : 1.5,
+                "volume" : 2000000
+            },
+            
+            "TRT" : {
+                "open" : 1.14,
+                "high" : 1.20,
+                "close" : 90,
+                "volume" : 1000
+            },
+            
+            "APPL" : {
+                "open" : 145.00,
+                "high" : 150.00,
+                "close" : 145.00,
+                "volume" : 4350060
+            }
+        }
+        
+        
+        # process the data sent back by the api, which will be some json object
+        self.process_data(data)
     
-    def get_balance(self):
-        return self.balance
+    
+    def process_data(self, data):
+        """Processes the json passed in
 
-    def get_stop_loss(self):
-        return self.stop_loss
-
-    def get_position(self):
-        return self.position
+        Args:
+            data (dict): dictionary/json object
+        """
+        self.update_current_prices(self.format_data(data))
+        self.check_stop_loss()
+        self.check_buy(data)
+        
+    
+    def check_buy(self, data):
+        for my_position in position:
+            high_price = data[my_position['code']]['high']
+            value_that_we_have = my_position['value']
+            
+            # if one of our stocks has dropped by 5%, buy more of it in the hopes that it will go up
+            if value_that_we_have * .95 >= high_price:
+                self.buy(my_position['code'], high_price, my_position['total_invested'] * 0.025)
+        
+        
+        
+        # checking for new stocks
+        
+            
+            
+            
+            
+            
