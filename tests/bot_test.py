@@ -36,10 +36,18 @@ class TestBot(unittest.TestCase):
         self.assertEqual(bot.get_position(), [])
         self.assertEqual(bot.get_balance(),  733.3333333333334)
         
+    
     def test_buy_exception(self):
         bot = Bot(balance = 1000, position = [])
         with self.assertRaises(Exception):
             bot.buy("TRT", 3.00, 2000)
+    
+    
+    
+    def test_sell_exception(self):
+        bot = Bot(balance = 1000, position = [])
+        with self.assertRaises(Exception):
+            bot.sell("EXR", 2.00)
 
 if __name__ == "__main__":
     unittest.main()

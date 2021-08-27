@@ -147,6 +147,9 @@ class Bot:
             code (string): Code of the given stock
             sell_price (double): Sell price of the given stock
         """
+        
         sell_object = [x for x in self.get_position() if x['code'] == code][0]
+        if sell_object is None:
+            raise Exception("Stock not in position")
         self.set_balance(self.get_balance() + sell_price * sell_object['num_shares'])
         self.position.remove(sell_object)
