@@ -252,9 +252,3 @@ class Bot:
         
         
         # checking for new stocks
-        
-            
-            
-            
-            
-            
