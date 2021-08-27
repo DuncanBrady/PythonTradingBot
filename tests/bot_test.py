@@ -25,7 +25,21 @@ class TestBot(unittest.TestCase):
         bot.sell("EXR", 2.00)
         self.assertEqual(bot.get_balance(), 1500)
 
-
+    def test_stop_loss(self):
+        bot = Bot(balance = 1000, position = [])
+        bot.buy("TRT", 3.00, 800)
+        self.assertEqual(bot.get_balance(), 200)
+        
+        bot.get_position()[0]['current_price'] = 2.00
+        bot.check_stop_loss()
+        
+        self.assertEqual(bot.get_position(), [])
+        self.assertEqual(bot.get_balance(),  733.3333333333334)
+        
+    def test_buy_exception(self):
+        bot = Bot(balance = 1000, position = [])
+        with self.assertRaises(Exception):
+            bot.buy("TRT", 3.00, 2000)
 
 if __name__ == "__main__":
     unittest.main()
