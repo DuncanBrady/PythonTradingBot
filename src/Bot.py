@@ -13,7 +13,9 @@ position = [
     }
 ]
 
-
+cases which we need to consider: 
+ - where we do nothing
+    - 
 
 '''
 
@@ -25,14 +27,32 @@ class Bot:
     
     @staticmethod
     def create_position_object(code, price, money_invested):
+        """Creates a new position object for a given stock bought
+
+        Args:
+            code (string): Code of the given stock
+            price (double ): price of the given stock
+            money_invested (double): money which is invested to buy the given stock
+
+        Returns:
+            dict: position object
+        """
         return {
             "code" : code,
+            "current_price" : price,
             "value" : price,
             "num_shares" : money_invested / price,
             "total_invested" : money_invested
         }
     @staticmethod
     def update_position_object(share_object, price, money_invested):
+        """Updates a given position object in the bots position
+
+        Args:
+            share_object (dict): given share object
+            price (double): price of the given stock/share
+            money_invested (double): money which is invested
+        """
         share_object['total_invested'] += money_invested
         share_object['num_shares'] += money_invested / price
         share_object['value'] = share_object['total_invested'] / share_object['num_shares']
@@ -56,6 +76,16 @@ class Bot:
         return self.position
     
     def buy(self, code, price, money_invested):
+        """Buys a particular stock code at a given price, which a portion of money invested
+
+        Args:
+            code (string): Code of the given stock
+            price (double): price of the given stock
+            money_invested (double): money which is being invested
+
+        Raises:
+            Exception: When the bot doesnt have enough money to make the purchase
+        """
         if self.balance - money_invested < 0:
             raise Exception("Not enough money to buy")
 
@@ -68,20 +98,43 @@ class Bot:
             self.position.append(self.create_position_object(code,price,money_invested))  
         else:
             self.update_position_object(share_object[0], price, money_invested)
+    
+    
+    
+    
+    def update_current_prices(self, data):
+        """Updates the current prices of stocks in the bots position
+
+        Args:
+            data (list[dict]): Assuming this is a list of dictionaries
+        """
+        for stock in data:
+            code = stock['code']
+            current_price = stock['price']
+            for my_position in self.position:
+                if my_position['code'] == code:
+                    my_position['current_price'] = current_price
+        
+    def get_ttlval_pos(self):
+        """Gets the total value of the bots position
+
+        Returns:
+            double: total value of the bots position
+        """
+        total = 0
+        for my_position in self.position:
+            total += my_position['current_price'] * my_position['num_shares']
+
+        return total
         
         
     def sell(self, code, sell_price):
+        """Sells a particular stock at a given sell price
+
+        Args:
+            code (string): Code of the given stock
+            sell_price (double): Sell price of the given stock
+        """
         sell_object = [x for x in self.get_position() if x['code'] == code][0]
         self.set_balance(self.get_balance() + sell_price * sell_object['num_shares'])
         self.position.remove(sell_object)
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

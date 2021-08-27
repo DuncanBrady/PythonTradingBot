@@ -13,6 +13,7 @@ class TestBot(unittest.TestCase):
         self.assertEqual(bot.get_balance(), 500)
         self.assertEqual(bot.get_position(), [{
             "code" : "EXR",
+            "current_price" : 1.00,
             "value" : 1.00,
             "num_shares" : 500,
             "total_invested" : 500
