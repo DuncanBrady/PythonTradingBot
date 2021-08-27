@@ -113,6 +113,9 @@ class Bot:
     def check_stop_loss(self):
         """Checks the bots position for stop loss
         """
+        
+        to_sell = []
+        
         for my_position in self.position:
             
             # compare current_price with value
@@ -120,8 +123,14 @@ class Bot:
             bought_value =  my_position['total_invested']
             
             if bought_value * (1 - self.stop_loss) >= actual_value:
-                self.sell(my_position['code'], my_position['current_price'])
+                to_sell.append(my_position)
         
+        for my_position in to_sell:
+            self.sell(my_position['code'], my_position['current_price'])
+    
+    
+    
+    
     def sell(self, code, sell_price):
         """Sells a particular stock at a given sell price
 
