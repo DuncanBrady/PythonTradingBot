@@ -48,6 +48,23 @@ class TestBot(unittest.TestCase):
         bot = Bot(balance = 1000, position = [])
         with self.assertRaises(Exception):
             bot.sell("EXR", 2.00)
+    
+    
+    
+    def test_process_data(self):
+        bot = Bot(balance = 1000, position = [])
+        bot.buy("APPL", 130.00, 1000)
+        
+        bot.periodic_call_api("url")
+        
+        self.assertEqual(bot.get_position()[0], {
+            "code" : "APPL",
+            "current_price" : 145.00,
+            "value" : 130.00,
+            "num_shares" : 1000/130,
+            "total_invested" : 1000
+        })
+        
 
 if __name__ == "__main__":
     unittest.main()
