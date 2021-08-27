@@ -59,24 +59,6 @@ class Bot:
         share_object['num_shares'] += money_invested / price
         share_object['value'] = share_object['total_invested'] / share_object['num_shares']
     
-    def set_stop_loss(self, stop_loss):
-        self.stop_loss = stop_loss
-
-    def set_balance(self, balance):
-        self.balance = balance
-        
-    def set_position(self, position):
-        self.position = position
-    
-    def get_balance(self):
-        return self.balance
-
-    def get_stop_loss(self):
-        return self.stop_loss
-
-    def get_position(self):
-        return self.position
-    
     def buy(self, code, price, money_invested):
         """Buys a particular stock code at a given price, which a portion of money invested
 
@@ -153,3 +135,25 @@ class Bot:
             raise Exception("Stock not in position")
         self.set_balance(self.get_balance() + sell_price * sell_object['num_shares'])
         self.position.remove(sell_object)
+
+    
+    '''
+        Getters and Setters
+    '''
+    def set_stop_loss(self, stop_loss):
+        self.stop_loss = stop_loss
+
+    def set_balance(self, balance):
+        self.balance = balance
+        
+    def set_position(self, position):
+        self.position = position
+    
+    def get_balance(self):
+        return self.balance
+
+    def get_stop_loss(self):
+        return self.stop_loss
+
+    def get_position(self):
+        return self.position
