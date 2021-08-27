@@ -13,9 +13,11 @@ position = [
     }
 ]
 
-cases which we need to consider: 
- - where we do nothing
-    - 
+def check_stoploss(self):
+ ---> compare value to current_price
+    ---> if difference > stop_loss_percent
+        ---> sell
+
 
 '''
 
@@ -100,8 +102,6 @@ class Bot:
             self.update_position_object(share_object[0], price, money_invested)
     
     
-    
-    
     def update_current_prices(self, data):
         """Updates the current prices of stocks in the bots position
 
@@ -126,7 +126,19 @@ class Bot:
             total += my_position['current_price'] * my_position['num_shares']
 
         return total
-        
+
+    
+    def check_stop_loss(self):
+        """Checks the bots position for stop loss
+        """
+        for my_position in self.position:
+            
+            # compare current_price with value
+            actual_value = my_position['current_price'] * my_position['num_shares']
+            bought_value =  my_position['total_invested']
+            
+            if bought_value * (1 - self.stop_loss) >= actual_value:
+                self.sell(my_position['code'], my_position['current_price'])
         
     def sell(self, code, sell_price):
         """Sells a particular stock at a given sell price
@@ -135,6 +147,9 @@ class Bot:
             code (string): Code of the given stock
             sell_price (double): Sell price of the given stock
         """
+        
         sell_object = [x for x in self.get_position() if x['code'] == code][0]
+        if sell_object is None:
+            raise Exception("Stock not in position")
         self.set_balance(self.get_balance() + sell_price * sell_object['num_shares'])
         self.position.remove(sell_object)
