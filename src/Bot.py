@@ -241,6 +241,11 @@ class Bot:
         
     
     def check_buy(self, data):
+        """Check if there is a favourable buy situation for the bots list of stocks
+
+        Args:
+            data (dict/json): Json object containing stock information at a particular
+        """
         for my_position in position:
             high_price = data[my_position['code']]['high']
             value_that_we_have = my_position['value']
