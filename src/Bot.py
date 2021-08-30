@@ -244,7 +244,7 @@ class Bot:
         """Check if there is a favourable buy situation for the bots list of stocks
 
         Args:
-            data (dict/json): Json object containing stock information at a particular
+            data (dict/json): Json object containing stock information at a particular time
         """
         for my_position in position:
             high_price = data[my_position['code']]['high']
