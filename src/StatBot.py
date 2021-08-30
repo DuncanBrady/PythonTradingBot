@@ -6,17 +6,14 @@
 Written: August 2021
 Author: Robert Brady & Luke Banicevic 
 '''
-<<<<<<< HEAD
+
 import numpy as np
 import scipy as sp
 
-=======
->>>>>>> 6c10af8... Please for the love of god work you cunt
 
 class StatBot:
 
     def __init__(self, mv_avg = {}, RSI = {}, past_prices = {}, codes = []):
-<<<<<<< HEAD
         """Constructor for the StatBot class
 
         Args:
@@ -93,16 +90,4 @@ class StatBot:
             update_code(str(key), incoming_data[key])
         return incoming_data
     
-=======
-        self.mv_avg = mv_avg
-        self.past_prices = past_prices
-        self.RSI = RSI
-        self.codes
-        if codes is not None:
-            for key in codes:
-                self.mv_avg[str(key)] = 0.0
-                self.past_prices[str(key)] = []
-                self.RSI[str(key)] = 0.0
-
-    def          
->>>>>>> 6c10af8... Please for the love of god work you cunt
+    
