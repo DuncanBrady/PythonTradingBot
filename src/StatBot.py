@@ -32,7 +32,7 @@ class StatBot:
         """Builds the statsbots collection of data as stock codes as keys
 
         Args:
-            codes ([type]): [description]
+            codes (list[string]): List of Stock codes which are being monitored
         """
         for key in codes:
             self.mv_avg[str(key)] = 0.0
