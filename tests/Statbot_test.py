@@ -7,6 +7,6 @@ from src.StatBot import StatBot
 class TestStatBot(unittest.TestCase):
 
     def test_construtor(self):
-        stat = StatBot(codes=["TST", "EXR", "IST"])
+        stat = StatBot(codes=["TST", "ISA", "EXR"])
 
     
