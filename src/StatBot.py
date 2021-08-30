@@ -62,4 +62,4 @@ class StatBot:
    
     def get_mv_avg(self, code):
         return self.mv_avg.get(code, None)
-    
+
