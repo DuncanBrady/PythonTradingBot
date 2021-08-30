@@ -85,9 +85,6 @@ class StatBot:
     def update_code(self, code, incoming_data):
         pass
 
-    def process_incoming(self, incoming_data):
-        for key in incoming_data:
-            update_code(str(key), incoming_data[key])
-        return incoming_data
+
     
     
