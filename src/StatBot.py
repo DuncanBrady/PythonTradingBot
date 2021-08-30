@@ -59,5 +59,5 @@ class StatBot:
         """
         for key in codes:
             self.mv_avg[str(key)] = 0.0
-            self.past_prices[str(key)] = []
+            self.past_prices[str(key)] = {"open" :[], "high": [], "close": []}
             self.RSI[str(key)] = 0.0   
