@@ -19,3 +19,44 @@ First attempt at a trading bot
                 -   N = the period of RSI.
     -   if a candle is outside the lower bollinger band AND rsi > 70, buy
     -   if a candle is outside the upper bollinger band AND rsi < 30, sell
+
+
+## Design/Process
+  - 
+
+API Call( every minute for example) -> bot -> bot.statBot -> statBot stores it (past five data calls are stored) -> statBot creates bolinger bands and returns them
+
+### Data Models
+
+### StatBot
+Attributes  
+  - optionOne
+    - dict = { "stockcode" : { "upperBand", "lowerBand", mvAVg, "pastPrices" : [] }}
+  - optionTwo
+    - mvAvgs = { stockcode : value,}
+    - bands = { stockcode: {upper, lower}}
+    - RSIs = { stockcode : value}
+    - pastPrices = { stockCode : [] }
+
+'''
+ Statistical Analysis tools for python trading bot, includes
+    - Bolinger Bands
+    - RSI Calculations
+Written: August 2021
+Author: Robert Brady & Luke Banicevic 
+'''
+
+class StatBot:
+
+    def __init__(self, mv_avg = {}, RSI = {}, past_prices = {}, codes = []):
+        self.mv_avg = mv_avg
+        self.past_prices = past_prices
+        self.RSI = RSI
+        self.codes
+        if codes is not None:
+            for key in codes:
+                self.mv_avg[str(key)] = 0.0
+                self.past_prices[str(key)] = []
+                self.RSI[str(key)] = 0.0
+
+    def          
