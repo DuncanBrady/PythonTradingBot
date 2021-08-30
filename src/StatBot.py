@@ -6,6 +6,9 @@
 Written: August 2021
 Author: Robert Brady & Luke Banicevic 
 '''
+import numpy as np
+import scipy as sp
+
 
 class StatBot:
 
@@ -17,7 +20,30 @@ class StatBot:
         if codes is not None:
             for key in codes:
                 self.mv_avg[str(key)] = 0.0
-                self.past_prices[str(key)] = []
+                self.past_prices[str(key)] = {"open" : [], "high" : [], "close" : []}
                 self.RSI[str(key)] = 0.0
 
-    def          
+    def calc_bands(self, mv_avg):
+        pass
+    
+    def rsi_calc(self):
+        pass
+
+    def update_code(self, code, incoming_data):
+        pass
+
+    def process_incoming(self, incoming_data):
+        for key in incoming_data:
+            update_code(str(key), incoming_data[key])
+        return incoming_data
+
+    def set_mv_avg(self, code, mv_avg):
+        self.mv_avg[code] = mv_avg
+
+    def set_rsi(self, code, rsi):
+        if self.rsi.get(code):
+            self.rsi[code] = rsi 
+   
+    def get_mv_avg(self, code):
+        return self.mv_avg.get(code, None)
+    
