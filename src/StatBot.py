@@ -6,6 +6,7 @@
 Written: August 2021
 Author: Robert Brady & Luke Banicevic 
 '''
+
 import numpy as np
 import scipy as sp
 
@@ -61,10 +62,18 @@ class StatBot:
             self.mv_avg[str(key)] = 0.0
             self.past_prices[str(key)] = {"open" :[], "high": [], "close": []}
             self.rsi[str(key)] = 0.0   
+    #Calculates upper and lower bolinger band values for a given stock
+    #bolinger bands represent a set number of standard deviations above or below the moving average
+    #close
+    def calc_bands(self, code):
+        #retrieve the past prices of the stock
 
-    def calc_bands(self, mv_avg):
-        pass
-    
+        #calculate the standard deviation
+
+        #retrive the moving average
+
+        #return tuple of upper and lower values
+
     def rsi_calc(self):
         pass
 
@@ -100,8 +109,6 @@ class StatBot:
     def update_code(self, code, incoming_data):
         pass
 
-    def process_incoming(self, incoming_data):
-        for key in incoming_data:
-            update_code(str(key), incoming_data[key])
-        return incoming_data
+
+    
     
