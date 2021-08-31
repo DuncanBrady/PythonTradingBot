@@ -1,4 +1,3 @@
-
 '''
  Statistical Analysis tools for python trading bot, includes
     - Bolinger Bands
@@ -15,7 +14,6 @@ class StatBot:
 
     def __init__(self, mv_avg = {}, RSI = {}, past_prices = {}, codes = []):
         """Constructor for the StatBot class
-
         Args:
             mv_avg (dict, optional): Stores the moving averages for all stock codes. Defaults to {}.
             RSI (dict, optional): Stores the RSI's for all stock codes . Defaults to {}.
@@ -30,7 +28,6 @@ class StatBot:
 
     def build_dicts(self, codes): 
         """Builds the statsbots collection of data as stock codes as keys
-
         Args:
             codes (list[string]): List of Stock codes which are being monitored
         """
@@ -43,7 +40,6 @@ class StatBot:
         """Calculates upper and lower bolinger band values for a given stock
         bolinger bands represent a set number of standard deviations above or below the moving average
         close
-
         Args:
             code (string): code for the given stock in question
         """
@@ -93,5 +89,4 @@ class StatBot:
         pass
 
 
-    
     
