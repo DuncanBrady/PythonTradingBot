@@ -62,10 +62,17 @@ class StatBot:
             self.mv_avg[str(key)] = 0.0
             self.past_prices[str(key)] = {"open" :[], "high": [], "close": []}
             self.rsi[str(key)] = 0.0   
-    #Calculates upper and lower bolinger band values for a given stock
-    #bolinger bands represent a set number of standard deviations above or below the moving average
-    #close
+    
     def calc_bands(self, code):
+        """Calculates upper and lower bolinger band values for a given stock
+        bolinger bands represent a set number of standard deviations above or below the moving average
+        close
+
+        Args:
+            code (string): code for the given stock in question
+        """
+        
+        
         #retrieve the past prices of the stock
 
         #calculate the standard deviation
