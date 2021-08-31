@@ -60,7 +60,7 @@ class StatBot:
         for key in codes:
             self.mv_avg[str(key)] = 0.0
             self.past_prices[str(key)] = {"open" :[], "high": [], "close": []}
-            self.RSI[str(key)] = 0.0   
+            self.rsi[str(key)] = 0.0   
 
     def calc_bands(self, mv_avg):
         pass
@@ -85,7 +85,12 @@ class StatBot:
    
     def get_mv_avg(self, code):
         return self.mv_avg.get(code, None)
+    
+    def get_price(self, code):
+        return self.past_prices.get(code, None)
 
+    def get_rsi(self, code):
+        return self.rsi.get(code, None)
     def calc_bands(self, mv_avg):
         pass
     
@@ -99,14 +104,4 @@ class StatBot:
         for key in incoming_data:
             update_code(str(key), incoming_data[key])
         return incoming_data
-
-    def set_mv_avg(self, code, mv_avg):
-        self.mv_avg[code] = mv_avg
-
-    def set_rsi(self, code, rsi):
-        if self.rsi.get(code):
-            self.rsi[code] = rsi 
-   
-    def get_mv_avg(self, code):
-        return self.mv_avg.get(code, None)
     
