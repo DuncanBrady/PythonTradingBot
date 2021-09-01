@@ -69,12 +69,12 @@ class StatBot:
         self.rsi_update_moves(code)
         
         # RSI calculation
-        AvgU = sum(self.get_rsi(code)['up_moves']) / len(self.get_rsi(code)['up_moves'])
-        AvgD = sum(self.get_rsi(code)['down_moves']) / len(self.get_rsi(code)['down_moves'])
-        RS = AvgU/AvgD
-        RSI = 100 - 100/(1+RS)
+        avg_up = sum(self.get_rsi(code)['up_moves']) / len(self.get_rsi(code)['up_moves'])
+        avg_down = sum(self.get_rsi(code)['down_moves']) / len(self.get_rsi(code)['down_moves'])
+        rs = avg_up/avg_down
+        rsi = 100 - 100/(1+rs)
         
-        self.set_rsi(code, RSI)
+        self.set_rsi(code, rsi)
         
     def rsi_update_moves(self, code):
         """Updates the list of up and down moves for a stock in a given period
