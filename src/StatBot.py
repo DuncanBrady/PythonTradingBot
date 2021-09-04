@@ -1,7 +1,7 @@
 '''
  Statistical Analysis tools for python trading bot, includes
     - Bolinger Bands
-    - RSI Calculations
+    - rsi Calculations
 Written: August 2021
 Author: Robert Brady & Luke Banicevic 
 '''
@@ -12,17 +12,17 @@ import scipy as sp
 
 class StatBot:
 
-    def __init__(self, mv_avg = {}, RSI = {}, past_prices = {}, codes = []):
+    def __init__(self, mv_avg = {}, rsi = {}, past_prices = {}, codes = []):
         """Constructor for the StatBot class
         Args:
             mv_avg (dict, optional): Stores the moving averages for all stock codes. Defaults to {}.
-            RSI (dict, optional): Stores the RSI's for all stock codes . Defaults to {}.
+            rsi (dict, optional): Stores the rsi's for all stock codes . Defaults to {}.
             past_prices (dict, optional): Stores the past prices of the monitored stock codes. Defaults to {}.
             codes (list, optional): Stock codes which are set to be monitored. Defaults to [].
         """
         self.mv_avg = mv_avg
         self.past_prices = past_prices
-        self.rsi = RSI
+        self.rsi = rsi
         if codes is not None:
             self.build_dicts(codes)
 
@@ -68,7 +68,7 @@ class StatBot:
         """
         self.rsi_update_moves(code)
         
-        # RSI calculation
+        # rsi calculation
         avg_up = sum(self.get_rsi(code)['up_moves']) / len(self.get_rsi(code)['up_moves'])
         avg_down = sum(self.get_rsi(code)['down_moves']) / len(self.get_rsi(code)['down_moves'])
         rs = avg_up/avg_down
@@ -136,7 +136,7 @@ class StatBot:
         for key in incoming_data:
             self.update_prices(key, incoming_data.get(key))
             self.update_mv_avg(key)
-            self.rsi_calc(key)
+            # self.rsi_calc(key)
 
 
     '''
