@@ -21,12 +21,21 @@ def check_stoploss(self):
 
 '''
 
+import json
+from StatBot import StatBot
+import requests
+import time
+import datetime
+import calendar
+ 
+
 class Bot:
     def __init__(self, balance=0.0, stop_loss=.125, position=[], position_limit = 10):
         self.balance = balance
         self.stop_loss = stop_loss
         self.position = position
         self.POSITION_LIMIT = position_limit
+        self.statbot = StatBot(codes=[])
     
         
     '''
@@ -193,42 +202,42 @@ class Bot:
         self.position.remove(sell_object)
 
 
-    def periodic_call_api(self, url):
+    def periodic_call_api(self, baseId = "xrp", quoteId = "bitcoin", exchange = "poloniex"):
         """Makes a periodic request to some api to get stock information
 
         Args:
             url (string): url of the given api
         """
+        now = datetime.datetime.utcnow()
+        before = datetime.datetime.utcnow() - datetime.timedelta(minutes=10)
         
-        # Example data sent back by api call
-        data = {
-            "EXR" : {
-                "open" : 1.00,
-                "high" : 2.00,
-                "close" : 1.5,
-                "volume" : 2000000
-            },
-            
-            "TRT" : {
-                "open" : 1.14,
-                "high" : 1.20,
-                "close" : 90,
-                "volume" : 1000
-            },
-            
-            "APPL" : {
-                "open" : 145.00,
-                "high" : 150.00,
-                "close" : 145.00,
-                "volume" : 4350060
-            }
+        start =  calendar.timegm(before.timetuple()) * 1000
+        end = calendar.timegm(now.timetuple()) * 1000
+        
+        CANDLE_DATA = 'http://api.coincap.io/v2/candles'
+        PARAMS = {
+            "exchange" : exchange,
+            "interval" : "m1",
+            "baseId" : baseId,
+            "quoteId" : quoteId,
+            "start" : str(start),
+            "end" : str(end)
         }
         
         
-        # process the data sent back by the api, which will be some json object
-        self.process_data(data)
-    
-    
+        response = requests.get(url = CANDLE_DATA, params = PARAMS)
+        
+        while response.status_code != 200:
+            time.sleep(2)
+            response = requests.get(url = CANDLE_DATA, params = PARAMS)
+        
+        data = response.json()['data'][-1]
+        print(data)
+        
+        
+        # self.process_data(data)
+        
+        
     def process_data(self, data):
         """Processes the json passed in
 
@@ -246,7 +255,7 @@ class Bot:
         Args:
             data (dict/json): Json object containing stock information at a particular time
         """
-        for my_position in position:
+        for my_position in self.position:
             high_price = data[my_position['code']]['high']
             value_that_we_have = my_position['value']
             

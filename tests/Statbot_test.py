@@ -157,7 +157,10 @@ class TestStatBot(unittest.TestCase):
 		upper = sum(prices1)/len(prices1) + 2*np.std(prices1)
   
 		self.assertEqual(stat.calc_bands("EXR"), (lower, upper))
-		
+	
+ 
+	def test_calc_rsi(self):
+		pass
   
 		
 

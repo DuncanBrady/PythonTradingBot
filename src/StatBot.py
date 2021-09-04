@@ -69,8 +69,10 @@ class StatBot:
         self.rsi_update_moves(code)
         
         # rsi calculation
-        avg_up = sum(self.get_rsi(code)['up_moves']) / len(self.get_rsi(code)['up_moves'])
-        avg_down = sum(self.get_rsi(code)['down_moves']) / len(self.get_rsi(code)['down_moves'])
+        avg_up = sum(self.rsi[code]['up_moves']) / len(self.rsi[code]['up_moves'])
+        avg_down = sum(self.rsi[code]['down_moves']) / len(self.rsi[code]['down_moves'])
+        if avg_down == 0:
+            avg_down = 1
         rs = avg_up/avg_down
         rsi = 100 - 100/(1+rs)
         
@@ -82,7 +84,10 @@ class StatBot:
         Args:
             code (string): stock code being updated
         """
-        diff = self.get_price(code)['close'][0] - self.get_price(code)['close'][1]
+        try:
+            diff = self.get_price(code)['close'][0] - self.get_price(code)['close'][1]
+        except:
+            diff = 0
         if diff > 0:
             self.rsi[code]['up_moves'].insert(0, diff)
         elif diff < 0:
@@ -136,7 +141,7 @@ class StatBot:
         for key in incoming_data:
             self.update_prices(key, incoming_data.get(key))
             self.update_mv_avg(key)
-            # self.rsi_calc(key)
+            self.rsi_calc(key)
 
 
     '''
