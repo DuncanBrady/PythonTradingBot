@@ -283,7 +283,7 @@ class Bot:
         
         # check for new stock
         for key in data:
-            #if key exists in position 
+            #if key doesnt exist in position 
             if not any(key in pos for pos in self.position):
                 if data[key]["close"] < self.statbot.calc_bands()[0] and self.statbot.get_rsi(key) < 30:
                     #access exchange api to purchase more stock
