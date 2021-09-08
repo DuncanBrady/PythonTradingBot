@@ -160,7 +160,19 @@ class TestStatBot(unittest.TestCase):
 	
  
 	def test_calc_rsi(self):
-		pass
+		bot = StatBot(codes=["EXR"],rsi={}, past_prices={})
+		prices = [1.5, 2.0, 1.75, 1.3, 1.8]
+		for price in prices:
+			bot.past_prices["EXR"]["close"].insert(0,price)
+			bot.rsi_calc("EXR")
+		self.assertEqual(round(bot.get_rsi("EXR"), 2), 41.18)
+		prices = [6001,7550,4431,9435,8453]
+		bot.past_prices["EXR"]["close"] = []
+		for price in prices:
+			bot.past_prices["EXR"]["close"].insert(0,price)
+			bot.rsi_calc("EXR")
+		self.assertEqual(round(bot.get_rsi("EXR"), 2), 38.49)
+		
   
 		
 

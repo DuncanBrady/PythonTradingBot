@@ -69,13 +69,13 @@ class StatBot:
         self.rsi_update_moves(code)
         
         # rsi calculation
-        avg_up = sum(self.rsi[code]['up_moves']) / len(self.rsi[code]['up_moves'])
-        avg_down = sum(self.rsi[code]['down_moves']) / len(self.rsi[code]['down_moves'])
-        if avg_down == 0:
-            avg_down = 1
-        rs = avg_up/avg_down
+
+        avg_up = abs(sum(self.rsi[code]['up_moves']) / len(self.rsi[code]['up_moves']))
+        avg_down = abs(sum(self.rsi[code]['down_moves']) / len(self.rsi[code]['down_moves']))
+        if avg_up == 0:
+           avg_up = 1
+        rs = avg_down/avg_up
         rsi = 100 - 100/(1+rs)
-        
         self.set_rsi(code, rsi)
         
     def rsi_update_moves(self, code):
@@ -141,7 +141,7 @@ class StatBot:
         for key in incoming_data:
             self.update_prices(key, incoming_data.get(key))
             self.update_mv_avg(key)
-            self.rsi_calc(key)
+         #   self.rsi_calc(key)
 
 
     '''
