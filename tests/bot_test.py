@@ -31,7 +31,7 @@ class TestBot(unittest.TestCase):
         self.assertEqual(bot.get_balance(), 200)
         
         bot.get_position()[0]['current_price'] = 2.00
-        bot.check_stop_loss()
+        bot.check_sell()
         
         self.assertEqual(bot.get_position(), [])
         self.assertEqual(bot.get_balance(),  733.3333333333334)

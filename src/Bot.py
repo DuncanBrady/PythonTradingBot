@@ -33,9 +33,10 @@ sys.path.append("..")
 from src.StatBot import StatBot
 
 class Bot:
-    def __init__(self, balance=0.0, stop_loss=.125, position=[], position_limit = 10):
+    def __init__(self, balance=0.0, stop_loss=.125, profit_take = 1.25, position=[], position_limit = 10):
         self.balance = balance
         self.stop_loss = stop_loss
+        self.profit_take = profit_take
         self.position = position
         self.POSITION_LIMIT = position_limit
         self.statbot = StatBot(codes=[])
@@ -182,7 +183,7 @@ class Bot:
         return total
 
     
-    def check_stop_loss(self):
+    def check_sell(self, data={}):
         """Checks the bots position for stop loss
         """
         
@@ -194,7 +195,9 @@ class Bot:
             actual_value = my_position['current_price'] * my_position['num_shares']
             bought_value =  my_position['total_invested']
             
-            if bought_value * (1 - self.stop_loss) >= actual_value:
+            if bought_value * (1 - self.stop_loss) >= actual_value or bought_value * self.profit_take <= actual_value:
+                to_sell.append(my_position)
+            elif data[my_position["code"]]["high"] >= self.statbot.calc_bands()[1] and self.statbot.get_rsi(my_position["code"]) >= 70:
                 to_sell.append(my_position)
         
         for my_position in to_sell:
@@ -207,7 +210,6 @@ class Bot:
             code (string): Code of the given stock
             sell_price (double): Sell price of the given stock
         """
-        
         sell_object = [x for x in self.get_position() if x['code'] == code][0]
         if sell_object is None:
             raise Exception("Stock not in position")
@@ -258,8 +260,9 @@ class Bot:
         """
         data = self.build_data()
         self.update_current_prices(self.format_data(data))
-        self.check_stop_loss()
+        self.check_sell()
         self.check_buy(data)
+        
         
     
     def check_buy(self, data):
@@ -276,6 +279,10 @@ class Bot:
             if value_that_we_have * .95 >= high_price:
                 self.buy(my_position['code'], high_price, my_position['total_invested'] * 0.025)
         
-        
-        
-        # checking for new stocks
+        # check for new stock
+        for key in data:
+            #if key exists in position 
+            if not any(key in pos for pos in self.position):
+                if data[key]["close"] < self.statbot.calc_bands()[0] and self.statbot.get_rsi(key) < 30:
+                    #access exchange api to purchase more stock
+                    self.buy(key, data[key]["close"], 500)
