@@ -255,7 +255,7 @@ class Bot:
                 
         
     def process_data(self):
-        """Processes and executes functions based on price information gathered from api call
+        """Processes price information gathered from api call and executes functions based on data
         """
         data = self.build_data()
         self.statbot.process_incoming(data)
