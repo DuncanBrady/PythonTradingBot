@@ -255,10 +255,7 @@ class Bot:
                 
         
     def process_data(self):
-        """Processes the json passed in
-
-        Args:
-            data (dict): dictionary/json object
+        """Processes and executes functions based on price information gathered from api call
         """
         data = self.build_data()
         self.statbot.process_incoming(data)
