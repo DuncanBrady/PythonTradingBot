@@ -22,12 +22,15 @@ def check_stoploss(self):
 '''
 
 import json
-from StatBot import StatBot
 import requests
 import time
 import datetime
 import calendar
+import sys
  
+sys.path.append("..")
+
+from src.StatBot import StatBot
 
 class Bot:
     def __init__(self, balance=0.0, stop_loss=.125, position=[], position_limit = 10):
@@ -115,6 +118,16 @@ class Bot:
         share_object['num_shares'] += money_invested / price
         share_object['value'] = share_object['total_invested'] / share_object['num_shares']
     
+    def build_data(self):
+        """
+        
+        """
+        data = {}
+        for code in self.statbot.get_codes():
+            data[code] = self.call_api(baseId=code)
+
+        return data
+
 
     def buy(self, code, price, money_invested):
         """Buys a particular stock code at a given price, which a portion of money invested
@@ -202,7 +215,7 @@ class Bot:
         self.position.remove(sell_object)
 
 
-    def periodic_call_api(self, baseId = "xrp", quoteId = "bitcoin", exchange = "poloniex"):
+    def call_api(self, baseId = "xrp", quoteId = "bitcoin", exchange = "poloniex"):
         """Makes a periodic request to some api to get stock information
 
         Args:
@@ -232,18 +245,18 @@ class Bot:
             response = requests.get(url = CANDLE_DATA, params = PARAMS)
         
         data = response.json()['data'][-1]
-        print(data)
+    
+
+        return data        
+                
         
-        
-        # self.process_data(data)
-        
-        
-    def process_data(self, data):
+    def process_data(self):
         """Processes the json passed in
 
         Args:
             data (dict): dictionary/json object
         """
+        data = self.build_data()
         self.update_current_prices(self.format_data(data))
         self.check_stop_loss()
         self.check_buy(data)
