@@ -261,6 +261,7 @@ class Bot:
             data (dict): dictionary/json object
         """
         data = self.build_data()
+        self.statbot.process_incoming(data)
         self.update_current_prices(self.format_data(data))
         self.check_sell()
         self.check_buy(data)
