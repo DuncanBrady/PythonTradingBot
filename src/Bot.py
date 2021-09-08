@@ -120,8 +120,10 @@ class Bot:
         share_object['value'] = share_object['total_invested'] / share_object['num_shares']
     
     def build_data(self):
-        """
-        
+        """Builds the data used by the bot into the correct format
+
+        Returns:
+            dict: Dictionary containing codes as keys and price information objects as values
         """
         data = {}
         for code in self.statbot.get_codes():
@@ -184,7 +186,7 @@ class Bot:
 
     
     def check_sell(self, data={}):
-        """Checks the bots position for stop loss
+        """Checks the bots position for a potential sell opportunity
         """
         
         to_sell = []
