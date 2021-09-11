@@ -219,26 +219,24 @@ class Bot:
         self.position.remove(sell_object)
 
 
-    def call_api(self, baseId = "xrp", quoteId = "bitcoin", exchange = "poloniex"):
+    def call_api(self, crypto = "ADA"):
         """Makes a periodic request to some api to get stock information
 
         Args:
             url (string): url of the given api
         """
         now = datetime.datetime.utcnow()
-        before = datetime.datetime.utcnow() - datetime.timedelta(minutes=10)
+        before = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
         
         start =  calendar.timegm(before.timetuple()) * 1000
         end = calendar.timegm(now.timetuple()) * 1000
         
-        CANDLE_DATA = 'http://api.coincap.io/v2/candles'
+        CANDLE_DATA = f'https://api.kraken.com/0/public/OHLC'
+        pair = f'{crypto}AUD'
         PARAMS = {
-            "exchange" : exchange,
-            "interval" : "m1",
-            "baseId" : baseId,
-            "quoteId" : quoteId,
-            "start" : str(start),
-            "end" : str(end)
+            'pair' : pair,
+            'interval' : '1',
+            'since' : end
         }
         
         
@@ -248,7 +246,7 @@ class Bot:
             time.sleep(2)
             response = requests.get(url = CANDLE_DATA, params = PARAMS)
         
-        data = response.json()['data'][-1]
+        data = response.json()
     
 
         return data        
