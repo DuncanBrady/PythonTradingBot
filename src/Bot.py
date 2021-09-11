@@ -21,12 +21,25 @@ def check_stoploss(self):
 
 '''
 
+import json
+import requests
+import time
+import datetime
+import calendar
+import sys
+ 
+sys.path.append("..")
+
+from src.StatBot import StatBot
+
 class Bot:
-    def __init__(self, balance=0.0, stop_loss=.125, position=[], position_limit = 10):
+    def __init__(self, balance=0.0, stop_loss=.125, profit_take = 1.25, position=[], position_limit = 10):
         self.balance = balance
         self.stop_loss = stop_loss
+        self.profit_take = profit_take
         self.position = position
         self.POSITION_LIMIT = position_limit
+        self.statbot = StatBot(codes=[])
     
         
     '''
@@ -106,6 +119,18 @@ class Bot:
         share_object['num_shares'] += money_invested / price
         share_object['value'] = share_object['total_invested'] / share_object['num_shares']
     
+    def build_data(self):
+        """Builds the data used by the bot into the correct format
+
+        Returns:
+            dict: Dictionary containing codes as keys and price information objects as values
+        """
+        data = {}
+        for code in self.statbot.get_codes():
+            data[code] = self.call_api(baseId=code)
+
+        return data
+
 
     def buy(self, code, price, money_invested):
         """Buys a particular stock code at a given price, which a portion of money invested
@@ -160,8 +185,8 @@ class Bot:
         return total
 
     
-    def check_stop_loss(self):
-        """Checks the bots position for stop loss
+    def check_sell(self, data={}):
+        """Checks the bots position for a potential sell opportunity
         """
         
         to_sell = []
@@ -172,7 +197,9 @@ class Bot:
             actual_value = my_position['current_price'] * my_position['num_shares']
             bought_value =  my_position['total_invested']
             
-            if bought_value * (1 - self.stop_loss) >= actual_value:
+            if bought_value * (1 - self.stop_loss) >= actual_value or bought_value * self.profit_take <= actual_value:
+                to_sell.append(my_position)
+            elif data[my_position["code"]]["high"] >= self.statbot.calc_bands()[1] and self.statbot.get_rsi(my_position["code"]) >= 70:
                 to_sell.append(my_position)
         
         for my_position in to_sell:
@@ -185,7 +212,6 @@ class Bot:
             code (string): Code of the given stock
             sell_price (double): Sell price of the given stock
         """
-        
         sell_object = [x for x in self.get_position() if x['code'] == code][0]
         if sell_object is None:
             raise Exception("Stock not in position")
@@ -193,51 +219,50 @@ class Bot:
         self.position.remove(sell_object)
 
 
-    def periodic_call_api(self, url):
+    def call_api(self, baseId = "xrp", quoteId = "bitcoin", exchange = "poloniex"):
         """Makes a periodic request to some api to get stock information
 
         Args:
             url (string): url of the given api
         """
+        now = datetime.datetime.utcnow()
+        before = datetime.datetime.utcnow() - datetime.timedelta(minutes=10)
         
-        # Example data sent back by api call
-        data = {
-            "EXR" : {
-                "open" : 1.00,
-                "high" : 2.00,
-                "close" : 1.5,
-                "volume" : 2000000
-            },
-            
-            "TRT" : {
-                "open" : 1.14,
-                "high" : 1.20,
-                "close" : 90,
-                "volume" : 1000
-            },
-            
-            "APPL" : {
-                "open" : 145.00,
-                "high" : 150.00,
-                "close" : 145.00,
-                "volume" : 4350060
-            }
+        start =  calendar.timegm(before.timetuple()) * 1000
+        end = calendar.timegm(now.timetuple()) * 1000
+        
+        CANDLE_DATA = 'http://api.coincap.io/v2/candles'
+        PARAMS = {
+            "exchange" : exchange,
+            "interval" : "m1",
+            "baseId" : baseId,
+            "quoteId" : quoteId,
+            "start" : str(start),
+            "end" : str(end)
         }
         
         
-        # process the data sent back by the api, which will be some json object
-        self.process_data(data)
+        response = requests.get(url = CANDLE_DATA, params = PARAMS)
+        
+        while response.status_code != 200:
+            time.sleep(2)
+            response = requests.get(url = CANDLE_DATA, params = PARAMS)
+        
+        data = response.json()['data'][-1]
     
-    
-    def process_data(self, data):
-        """Processes the json passed in
 
-        Args:
-            data (dict): dictionary/json object
+        return data        
+                
+        
+    def process_data(self):
+        """Processes price information gathered from api call and executes functions based on data
         """
+        data = self.build_data()
+        self.statbot.process_incoming(data)
         self.update_current_prices(self.format_data(data))
-        self.check_stop_loss()
+        self.check_sell()
         self.check_buy(data)
+        
         
     
     def check_buy(self, data):
@@ -246,7 +271,7 @@ class Bot:
         Args:
             data (dict/json): Json object containing stock information at a particular time
         """
-        for my_position in position:
+        for my_position in self.position:
             high_price = data[my_position['code']]['high']
             value_that_we_have = my_position['value']
             
@@ -254,6 +279,10 @@ class Bot:
             if value_that_we_have * .95 >= high_price:
                 self.buy(my_position['code'], high_price, my_position['total_invested'] * 0.025)
         
-        
-        
-        # checking for new stocks
+        # check for new stock
+        for key in data:
+            #if key doesnt exist in position 
+            if not any(key in pos for pos in self.position):
+                if data[key]["close"] < self.statbot.calc_bands()[0] and self.statbot.get_rsi(key) < 30:
+                    #access exchange api to purchase more stock
+                    self.buy(key, data[key]["close"], 500)

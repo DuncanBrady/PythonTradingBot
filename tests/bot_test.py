@@ -31,7 +31,7 @@ class TestBot(unittest.TestCase):
         self.assertEqual(bot.get_balance(), 200)
         
         bot.get_position()[0]['current_price'] = 2.00
-        bot.check_stop_loss()
+        bot.check_sell()
         
         self.assertEqual(bot.get_position(), [])
         self.assertEqual(bot.get_balance(),  733.3333333333334)
@@ -55,11 +55,11 @@ class TestBot(unittest.TestCase):
         bot = Bot(balance = 1000, position = [])
         bot.buy("APPL", 130.00, 1000)
         
-        bot.periodic_call_api("url")
+        bot.call_api()
         
         self.assertEqual(bot.get_position()[0], {
             "code" : "APPL",
-            "current_price" : 145.00,
+            "current_price" : 130.00,
             "value" : 130.00,
             "num_shares" : 1000/130,
             "total_invested" : 1000
