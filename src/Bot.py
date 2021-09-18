@@ -219,7 +219,7 @@ class Bot:
             
             if bought_value * (1 - self.stop_loss) >= actual_value or bought_value * self.profit_take <= actual_value:
                 to_sell.append(my_position)
-            elif data[my_position["code"]]["high"] >= self.statbot.calc_bands()[1] and self.statbot.get_rsi(my_position["code"]) >= 70:
+            elif data[my_position["code"]]["high"] >= self.statbot.calc_bands(my_position["code"])[1] and self.statbot.get_rsi(my_position["code"]) >= 70:
                 to_sell.append(my_position)
         
         for my_position in to_sell:
@@ -278,7 +278,7 @@ class Bot:
         data = self.build_data()
         self.statbot.process_incoming(data)
         self.update_current_prices(self.format_data(data))
-        self.check_sell()
+        self.check_sell(data)
         self.check_buy(data)
         
         
@@ -310,10 +310,13 @@ class Bot:
 if __name__ == "__main__":
     
     bot = Bot(balance = 1000.0, codes = ['XXBTZ', 'XETHZ', 'ADA', 'XXRPZ'])
+    output_file = open("output.txt", "w")
+    
     while True:
         bot.process_data()
-        print(f"Bots current balance {bot.get_balance()}")
-        print(f"Bots current position {bot.get_position()}")
+        print(f"Bots current balance: {bot.get_balance()}")
+        print(f"Bots total value of digital assets: {bot.get_ttlval_pos()}")
+        print(f"Bots current position: {bot.get_position()}")
         print("Prices")
         print("-" * 20)
         print(f"BTC {bot.statbot.get_price('XXBTZ')}")
@@ -321,6 +324,15 @@ if __name__ == "__main__":
         print(f"ETH {bot.statbot.get_price('XETHZ')}")
         print(f"XRP {bot.statbot.get_price('XXRPZ')}")
         print("-" * 20)
-        time.sleep(5)
+        
+        
+        output_file.write(
+        f"Current Time: {datetime.datetime.now()}\n"
+        f"Bots current balance: {bot.get_balance()}\n"
+        f"Bots total value of digital assets: {bot.get_ttlval_pos()}\n"
+        f"Bots current position: {bot.get_position()}\n"
+        "----------------------------------------\n"
+        )
+        time.sleep(45)
         
         

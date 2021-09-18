@@ -163,7 +163,7 @@ class StatBot:
         for key in incoming_data:
             self.update_prices(key, incoming_data.get(key))
             self.update_mv_avg(key)
-         #   self.rsi_calc(key)
+            self.rsi_calc(key)
 
 
     '''

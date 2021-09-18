@@ -1,0 +1,50 @@
+Current Time: 2021-09-18 14:32:27.318166
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:32:59.073200
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:34:00.618438
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:34:32.431970
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:35:20.157016
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:35:51.956985
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:36:50.756357
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:37:37.105746
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:38:08.765278
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
+Current Time: 2021-09-18 14:38:43.792674
+Bots current balance: 1000.0
+Bots total value of digital assets: 0
+Bots current position: []
+----------------------------------------
