@@ -115,8 +115,8 @@ class StatBot:
             self.rsi[code]['up_moves'].insert(0, 0)
             self.rsi[code]['down_moves'].insert(0, 0)
         
-        self.rsi[code]['up_moves'] = self.rsi[code]['up_moves'][:5]
-        self.rsi[code]['down_moves'] = self.rsi[code]['down_moves'][:5]
+        self.rsi[code]['up_moves'] = self.rsi[code]['up_moves'][:14]
+        self.rsi[code]['down_moves'] = self.rsi[code]['down_moves'][:14]
         
     
     def update_prices(self, code, new_prices):
@@ -136,10 +136,10 @@ class StatBot:
             old_prices['high'].insert(0,new_prices['high'])
             old_prices['low'].insert(0, new_prices['low'])
             
-            old_prices['open'] = old_prices['open'][:5]
-            old_prices['close'] = old_prices['close'][:5]
-            old_prices['high'] = old_prices['high'][:5]
-            old_prices['low'] = old_prices['low'][:5]
+            old_prices['open'] = old_prices['open'][:14]
+            old_prices['close'] = old_prices['close'][:14]
+            old_prices['high'] = old_prices['high'][:14]
+            old_prices['low'] = old_prices['low'][:14]
         
     def update_mv_avg(self, code):
         """Updates the mv avg for a stock code

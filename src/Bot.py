@@ -12,6 +12,7 @@ import time
 import datetime
 import calendar
 import sys
+import math
  
 sys.path.append("..")
 
@@ -34,6 +35,7 @@ class Bot:
         self.position = position
         self.POSITION_LIMIT = position_limit
         self.statbot = StatBot(codes=codes)
+        self.initial_balance = balance
     
         
     '''
@@ -204,7 +206,7 @@ class Bot:
             
             if bought_value * (1 - self.stop_loss) >= actual_value or bought_value * self.profit_take <= actual_value:
                 to_sell.append(my_position)
-            elif data[my_position["code"]]["high"] >= self.statbot.calc_bands(my_position["code"])[1] and self.statbot.get_rsi(my_position["code"]) >= 70:
+            elif data[my_position["code"]]["close"] >= self.statbot.calc_bands(my_position["code"])[1] and self.statbot.get_rsi(my_position["code"]) >= 70:
                 to_sell.append(my_position)
         
         for my_position in to_sell:
@@ -286,11 +288,18 @@ class Bot:
         for key in data:
             #if key doesnt exist in position 
             if not any(key in pos for pos in self.position):
-                if data[key]["close"] < self.statbot.calc_bands(key)[0] and self.statbot.get_rsi(key) < 30:
+                if data[key]["close"] < self.statbot.calc_bands(key)[0] and self.statbot.get_rsi(key) <= 30:
                     #access exchange api to purchase more stock
-                    self.buy(key, data[key]["close"], 500)
+                    self.buy(key, data[key]["close"], self.get_buy_amount())
 
 
+    def get_buy_amount(self):
+        """Returns a buy amount as a function of the bots current balance amount
+
+        Returns:
+            float: The amount the bot can currently buy given its current balance
+        """
+        return self.initial_balance * pow(math.e, -self.initial_balance/self.balance)
 
 if __name__ == "__main__":
     
@@ -318,6 +327,6 @@ if __name__ == "__main__":
         f"Bots current position: {bot.get_position()}\n"
         "----------------------------------------\n"
         )
-        time.sleep(45)
+        time.sleep(30)
         
         
