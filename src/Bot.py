@@ -32,14 +32,23 @@ sys.path.append("..")
 
 from src.StatBot import StatBot
 
+TIME = 0
+OPEN = 1
+HIGH = 2
+LOW = 3
+CLOSE = 4
+VWAP = 5
+VOL = 6
+
 class Bot:
-    def __init__(self, balance=0.0, stop_loss=.125, profit_take = 1.25, position=[], position_limit = 10):
+    def __init__(self, balance=0.0, stop_loss=.125, profit_take = 1.25, position=[], position_limit = 10, codes = []):
+        self.codes = codes
         self.balance = balance
         self.stop_loss = stop_loss
         self.profit_take = profit_take
         self.position = position
         self.POSITION_LIMIT = position_limit
-        self.statbot = StatBot(codes=[])
+        self.statbot = StatBot(codes=codes)
     
         
     '''
@@ -62,6 +71,9 @@ class Bot:
 
     def get_position(self):
         return self.position
+    
+    def get_codes(self):
+        return self.codes
     
     '''
         Static methods
@@ -126,8 +138,16 @@ class Bot:
             dict: Dictionary containing codes as keys and price information objects as values
         """
         data = {}
-        for code in self.statbot.get_codes():
-            data[code] = self.call_api(baseId=code)
+        for code in self.get_codes():
+            value = self.call_api(crypto=code)
+            data[code] = {
+                
+                'open' : float(value[OPEN]),
+                'high' : float(value[HIGH]),
+                'low'  : float(value[LOW]),
+                'close' : float(value[CLOSE])
+            
+            }
 
         return data
 
@@ -232,7 +252,7 @@ class Bot:
         end = calendar.timegm(now.timetuple()) * 1000
         
         CANDLE_DATA = f'https://api.kraken.com/0/public/OHLC'
-        pair = f'{crypto}AUD'
+        pair = f'{crypto}USD'
         PARAMS = {
             'pair' : pair,
             'interval' : '1',
@@ -246,10 +266,10 @@ class Bot:
             time.sleep(2)
             response = requests.get(url = CANDLE_DATA, params = PARAMS)
         
-        data = response.json()
+        # Get the most important information from the response recieved
+        data = response.json().get('result').get(pair)[0]
     
-
-        return data        
+        return data      
                 
         
     def process_data(self):
@@ -281,6 +301,26 @@ class Bot:
         for key in data:
             #if key doesnt exist in position 
             if not any(key in pos for pos in self.position):
-                if data[key]["close"] < self.statbot.calc_bands()[0] and self.statbot.get_rsi(key) < 30:
+                if data[key]["close"] < self.statbot.calc_bands(key)[0] and self.statbot.get_rsi(key) < 30:
                     #access exchange api to purchase more stock
                     self.buy(key, data[key]["close"], 500)
+
+
+
+if __name__ == "__main__":
+    
+    bot = Bot(balance = 1000.0, codes = ['XXBTZ', 'XETHZ', 'ADA', 'XXRPZ'])
+    while True:
+        bot.process_data()
+        print(f"Bots current balance {bot.get_balance()}")
+        print(f"Bots current position {bot.get_position()}")
+        print("Prices")
+        print("-" * 20)
+        print(f"BTC {bot.statbot.get_price('XXBTZ')}")
+        print(f"ADA {bot.statbot.get_price('ADA')}")
+        print(f"ETH {bot.statbot.get_price('XETHZ')}")
+        print(f"XRP {bot.statbot.get_price('XXRPZ')}")
+        print("-" * 20)
+        time.sleep(5)
+        
+        

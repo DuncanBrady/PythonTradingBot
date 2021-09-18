@@ -10,6 +10,9 @@ import numpy as np
 import scipy as sp
 
 
+
+
+
 class StatBot:
 
     def __init__(self, mv_avg = {}, rsi = {}, past_prices = {}, codes = []):
@@ -26,18 +29,10 @@ class StatBot:
         if codes is not None:
             self.build_dicts(codes)
 
-    def calc_bands(self, mv_avg):
-        pass
-    
-    def rsi_calc(self):
-        pass
-
-    def update_code(self, code, incoming_data):
-        pass
 
     def process_incoming(self, incoming_data):
         for key in incoming_data:
-            update_code(str(key), incoming_data[key])
+            self.update_code(str(key), incoming_data[key])
         return incoming_data
 
     def set_mv_avg(self, code, mv_avg):
@@ -57,7 +52,7 @@ class StatBot:
         """
         for key in codes:
             self.mv_avg[str(key)] = 0.0
-            self.past_prices[str(key)] = {"open" :[], "high": [], "close": []}
+            self.past_prices[str(key)] = {"open" :[], "high": [], "close": [], "low" : []}
             self.rsi[str(key)] = {
                 "rsi" : 0.0,
                 "up_moves" : [],
@@ -139,10 +134,12 @@ class StatBot:
             old_prices['open'].insert(0, new_prices['open'])
             old_prices['close'].insert(0,new_prices['close'])
             old_prices['high'].insert(0,new_prices['high'])
+            old_prices['low'].insert(0, new_prices['low'])
             
             old_prices['open'] = old_prices['open'][:5]
             old_prices['close'] = old_prices['close'][:5]
             old_prices['high'] = old_prices['high'][:5]
+            old_prices['low'] = old_prices['low'][:5]
         
     def update_mv_avg(self, code):
         """Updates the mv avg for a stock code
@@ -162,6 +159,7 @@ class StatBot:
         Args:
             incoming_data (dict): data of stock codes and price information
         """
+        # print(incoming_data)
         for key in incoming_data:
             self.update_prices(key, incoming_data.get(key))
             self.update_mv_avg(key)
