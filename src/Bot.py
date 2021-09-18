@@ -1,23 +1,8 @@
 '''
-constants:
-    - stop loss percentage : eg 20%
-    - balance : double 
-    - 
-
-
-position = [
-    {
-        "code" : 'XRP',
-        "value" : 2.00,
-        "number_of_shares" : 5000.0
-    }
-]
-
-def check_stoploss(self):
- ---> compare value to current_price
-    ---> if difference > stop_loss_percent
-        ---> sell
-
+    Description: Trading Bot which uses the Bollinger Band trading strategy, trades on the Kraken
+    exchange.
+    Author: Luke Banicevic & Robert Brady
+    Date: 18/09/2021
 
 '''
 
