@@ -1,69 +1,9 @@
-Current Time: 2021-09-18 21:15:47.038658
+Current Time: 2021-09-25 13:06:10.306403
 Bots current balance: 1000.0
 Bots total value of digital assets: 0
 Bots current position: []
 ----------------------------------------
-Current Time: 2021-09-18 21:16:19.112827
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:16:51.234910
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:17:23.267279
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:17:55.395080
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:18:27.543390
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:18:59.849469
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:19:31.986246
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:20:03.996342
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:20:36.548869
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:21:08.608045
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:21:40.721094
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:22:12.857781
-Bots current balance: 1000.0
-Bots total value of digital assets: 0
-Bots current position: []
-----------------------------------------
-Current Time: 2021-09-18 21:22:45.042693
+Current Time: 2021-09-25 13:06:42.639759
 Bots current balance: 1000.0
 Bots total value of digital assets: 0
 Bots current position: []

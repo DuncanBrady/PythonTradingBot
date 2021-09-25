@@ -35,7 +35,6 @@ class Bot:
         self.position = position
         self.POSITION_LIMIT = position_limit
         self.statbot = StatBot(codes=codes)
-        self.initial_balance = balance
     
         
     '''
@@ -299,7 +298,7 @@ class Bot:
         Returns:
             float: The amount the bot can currently buy given its current balance
         """
-        return self.initial_balance * pow(math.e, -self.initial_balance/self.balance)
+        return self.balance / 3
 
 if __name__ == "__main__":
     
