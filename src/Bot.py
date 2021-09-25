@@ -290,10 +290,11 @@ class Bot:
             # if one of our stocks has dropped by 5%, buy more of it in the hopes that it will go up
             if value_that_we_have * .95 >= high_price:
                 self.buy(my_position['code'], high_price, my_position['total_invested'] * 0.025)
+                
         rank_dict = {}
-        #check for new stock
+        # check for new stock
         for key in data:
-            #if key doesnt exist in position 
+            # if key doesnt exist in position 
             if not any(key in pos for pos in self.position):
                 diff = abs(data[key]['close'] - self.statbot.calc_bands(key)[0])
                 if data[key]["close"] < self.statbot.calc_bands(key)[0] and self.statbot.get_rsi(key) <= 30:
@@ -301,10 +302,10 @@ class Bot:
                     self.add_buy(key, data[key]["close"], self.get_buy_amount())
                     rank_dict[key] = self.get_score(BUY, self.statbot.get_rsi(key), diff)
 
-        #check if buying any
+        # check if buying any
         if len(self.buying) != 0:
-            #sorts buying based 
-            
+            # sorts buying based on value of rank
+            sorted(self.buying, key = lambda x : -rank_dict[x['code']])
                 
 
     def get_buy_amount(self):
