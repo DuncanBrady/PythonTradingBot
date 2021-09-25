@@ -201,21 +201,34 @@ class Bot:
         """
         
         to_sell = []
-        
+        rank_dict = {}
         for my_position in self.position:
             
             # compare current_price with value
             actual_value = my_position['current_price'] * my_position['num_shares']
             bought_value =  my_position['total_invested']
-            
-            if bought_value * (1 - self.stop_loss) >= actual_value or bought_value * self.profit_take <= actual_value:
+            # check if current price significantly dropped from bought
+            if bought_value * (1 - self.stop_loss) >= actual_value:
                 to_sell.append(my_position)
+                #rank the coin based on distance from bought value to ensure priority over other sell conditions 
+                rank_dict[my_position['code']] = actual_value - bought_value
+            elif bought_value * self.profit_take <= actual_value:
+                to_sell.append(my_position)
+                # rank the coin based on the gain of selling
+                rank_dict[my_position['code']] = bought_value - actual_value
             elif data[my_position["code"]]["close"] >= self.statbot.calc_bands(my_position["code"])[1] and self.statbot.get_rsi(my_position["code"]) >= 70:
+                diff = abs(data[my_position["code"]]["close"] - self.statbot.calc_bands(my_position["code"])[1])
                 to_sell.append(my_position)
-        
+                #rank the coin based on the score calculated in get score using difference between bands and rsi
+                rank_dict[my_position['code']] = self.get_score(SELL, self.statbot.get_rsi(my_position['code']), diff)
+       
         for my_position in to_sell:
             self.sell(my_position['code'], my_position['current_price'])
-    
+        
+        if len(self.selling) != 0:
+        # sorts buying based on value of rank
+            self.selling.sort(key = lambda x : rank_dict[x['code']])
+
     def add_sell(self, code, sell_price):
         """Sells a particular stock at a given sell price
 
@@ -305,7 +318,7 @@ class Bot:
         # check if buying any
         if len(self.buying) != 0:
             # sorts buying based on value of rank
-            sorted(self.buying, key = lambda x : -rank_dict[x['code']])
+            self.buying.sort(key = lambda x : -rank_dict[x['code']])
                 
 
     def get_buy_amount(self):
@@ -320,7 +333,7 @@ class Bot:
         if scoretype == BUY:
             return band_diff/rsi
         elif scoretype == SELL:
-            return rsi * band_diff
+            return 1/(rsi * band_diff)
 
     def send_order():
         #
