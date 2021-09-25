@@ -35,6 +35,8 @@ class Bot:
         self.position = position
         self.POSITION_LIMIT = position_limit
         self.statbot = StatBot(codes=codes)
+        self.buying = []
+        self.selling = []
     
         
     '''
