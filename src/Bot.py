@@ -339,14 +339,6 @@ class Bot:
         #
         pass
 
-    def rank_orders():
-        '''
-        sorts the buying and selling lists based 
-        '''
-        ranked_buys = []
-        ranked_sells = []
-        return (ranked_buys, ranked_sells)
-
 if __name__ == "__main__":
     
     bot = Bot(balance = 1000.0, codes = ['XXBTZ', 'XETHZ', 'ADA', 'XXRPZ'])
