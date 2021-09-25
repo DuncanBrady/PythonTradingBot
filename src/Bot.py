@@ -25,6 +25,8 @@ LOW = 3
 CLOSE = 4
 VWAP = 5
 VOL = 6
+BUY = 1
+SELL = 0
 
 class Bot:
     def __init__(self, balance=0.0, stop_loss=.125, profit_take = 1.25, position=[], position_limit = 10, codes = []):
@@ -140,7 +142,7 @@ class Bot:
         return data
 
 
-    def buy(self, code, price, money_invested):
+    def add_buy(self, code, price, money_invested, score):
         """Buys a particular stock code at a given price, which a portion of money invested
 
         Args:
@@ -165,7 +167,8 @@ class Bot:
             self.position.append(self.create_position_object(code,price,money_invested))  
         else:
             self.update_position_object(share_object[0], price, money_invested)
-    
+        #append Buy to buying list
+        self.buying.append(share_object[0])
     
     def update_current_prices(self, data):
         """Updates the current prices of stocks in the bots position
@@ -213,7 +216,7 @@ class Bot:
         for my_position in to_sell:
             self.sell(my_position['code'], my_position['current_price'])
     
-    def sell(self, code, sell_price):
+    def add_sell(self, code, sell_price):
         """Sells a particular stock at a given sell price
 
         Args:
@@ -225,6 +228,8 @@ class Bot:
             raise Exception("Stock not in position")
         self.set_balance(self.get_balance() + sell_price * sell_object['num_shares'])
         self.position.remove(sell_object)
+        #add object to sell list for next order
+        self.selling.append(sell_object)
 
 
     def call_api(self, crypto = "ADA"):
@@ -268,7 +273,8 @@ class Bot:
         self.update_current_prices(self.format_data(data))
         self.check_sell(data)
         self.check_buy(data)
-        
+        #send order
+        #reset orders 
         
     
     def check_buy(self, data):
@@ -284,15 +290,22 @@ class Bot:
             # if one of our stocks has dropped by 5%, buy more of it in the hopes that it will go up
             if value_that_we_have * .95 >= high_price:
                 self.buy(my_position['code'], high_price, my_position['total_invested'] * 0.025)
-        
-        # check for new stock
+        rank_dict = {}
+        #check for new stock
         for key in data:
             #if key doesnt exist in position 
             if not any(key in pos for pos in self.position):
+                diff = abs(data[key]['close'] - self.statbot.calc_bands(key)[0])
                 if data[key]["close"] < self.statbot.calc_bands(key)[0] and self.statbot.get_rsi(key) <= 30:
                     #access exchange api to purchase more stock
-                    self.buy(key, data[key]["close"], self.get_buy_amount())
+                    self.add_buy(key, data[key]["close"], self.get_buy_amount())
+                    rank_dict[key] = self.get_score(BUY, self.statbot.get_rsi(key), diff)
 
+        #check if buying any
+        if len(self.buying) != 0:
+            #sorts buying based 
+            
+                
 
     def get_buy_amount(self):
         """Returns a buy amount as a function of the bots current balance amount
@@ -301,6 +314,24 @@ class Bot:
             float: The amount the bot can currently buy given its current balance
         """
         return self.balance / 3
+    
+    def get_score(scoretype, rsi, band_diff):
+        if scoretype == BUY:
+            return band_diff/rsi
+        elif scoretype == SELL:
+            return rsi * band_diff
+
+    def send_order():
+        #
+        pass
+
+    def rank_orders():
+        '''
+        sorts the buying and selling lists based 
+        '''
+        ranked_buys = []
+        ranked_sells = []
+        return (ranked_buys, ranked_sells)
 
 if __name__ == "__main__":
     
