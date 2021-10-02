@@ -184,5 +184,3 @@ class StatBot:
 
     def get_rsi(self, code):
         return self.rsi.get(code, None).get('rsi')
-
-    

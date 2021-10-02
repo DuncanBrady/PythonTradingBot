@@ -121,6 +121,25 @@ class Bot:
         share_object['num_shares'] += money_invested / price
         share_object['value'] = share_object['total_invested'] / share_object['num_shares']
     
+    
+    @staticmethod
+    def get_score(scoretype, rsi, band_diff):
+        """Gets the score of a particular stock based on its rsi and bollinger band 
+
+        Args:
+            scoretype (int): enum which corresponds to either a buy or sell score
+            rsi (float): relative strength index of the stock
+            band_diff (float): difference between the close/high of the stock price 
+            and the position of the outer bound bollinger band
+
+        Returns:
+            [float]: [the score]
+        """
+        if scoretype == BUY:
+            return band_diff/rsi
+        elif scoretype == SELL:
+            return 1/(rsi * band_diff)
+    
     def build_data(self):
         """Builds the data used by the bot into the correct format
 
@@ -142,7 +161,7 @@ class Bot:
         return data
 
 
-    def add_buy(self, code, price, money_invested, score):
+    def add_buy(self, code, price, money_invested):
         """Buys a particular stock code at a given price, which a portion of money invested
 
         Args:
@@ -161,14 +180,19 @@ class Bot:
         self.set_balance(self.get_balance() - money_invested)
         
         # if the code is already in the list, try and find it
-        share_object = [x for x in self.get_position() if x['code'] == code]
+        try:
+            share_object = [x for x in self.get_position() if x['code'] == code][0]
+        except IndexError:
+            share_object = None
         
-        if len(share_object) == 0:
-            self.position.append(self.create_position_object(code,price,money_invested))  
+        if share_object is None:
+            share_object = self.create_position_object(code,price,money_invested)
+            self.position.append(share_object)
         else:
-            self.update_position_object(share_object[0], price, money_invested)
+            self.update_position_object(share_object, price, money_invested)
+
         #append Buy to buying list
-        self.buying.append(share_object[0])
+        self.buying.append(share_object)
     
     def update_current_prices(self, data):
         """Updates the current prices of stocks in the bots position
@@ -223,7 +247,7 @@ class Bot:
                 rank_dict[my_position['code']] = self.get_score(SELL, self.statbot.get_rsi(my_position['code']), diff)
        
         for my_position in to_sell:
-            self.sell(my_position['code'], my_position['current_price'])
+            self.add_sell(my_position['code'], my_position['current_price'])
         
         if len(self.selling) != 0:
         # sorts buying based on value of rank
@@ -302,7 +326,7 @@ class Bot:
             
             # if one of our stocks has dropped by 5%, buy more of it in the hopes that it will go up
             if value_that_we_have * .95 >= high_price:
-                self.buy(my_position['code'], high_price, my_position['total_invested'] * 0.025)
+                self.add_buy(my_position['code'], high_price, my_position['total_invested'] * 0.025)
                 
         rank_dict = {}
         # check for new stock
@@ -318,7 +342,8 @@ class Bot:
         # check if buying any
         if len(self.buying) != 0:
             # sorts buying based on value of rank
-            self.buying.sort(key = lambda x : -rank_dict[x['code']])
+            if len(rank_dict):
+                self.buying.sort(key = lambda x : -rank_dict[x['code']])
                 
 
     def get_buy_amount(self):
@@ -329,11 +354,7 @@ class Bot:
         """
         return self.balance / 3
     
-    def get_score(scoretype, rsi, band_diff):
-        if scoretype == BUY:
-            return band_diff/rsi
-        elif scoretype == SELL:
-            return 1/(rsi * band_diff)
+    
 
     def send_order():
         #

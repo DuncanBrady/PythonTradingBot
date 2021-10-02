@@ -116,11 +116,11 @@ class TestStatBot(unittest.TestCase):
   
   
 		prices = []
-		for i in range(6):
+		for i in range(15):
 			prices.append(random.randint(0,10))
 
-		prices1 = prices[0:5]
-		prices2 = prices[1:6]
+		prices1 = prices[0:14]
+		prices2 = prices[1:15]
 
 		for num in prices1:
 			data["EXR"]['close'] = num
@@ -151,11 +151,11 @@ class TestStatBot(unittest.TestCase):
   
   
 		prices = []
-		for i in range(6):
+		for i in range(15):
 			prices.append(random.randint(0,10))
 
-		prices1 = prices[0:5]
-		prices2 = prices[1:6]
+		prices1 = prices[0:14]
+		prices2 = prices[1:15]
 
 		for num in prices1:
 			data["EXR"]['close'] = num
