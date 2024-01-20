@@ -9,7 +9,7 @@ Author: Robert Brady & Luke Banicevic
 import numpy as np
 
 
-class StatBot:
+class StatBot():
 
     def __init__(self, mv_avg={}, rsi={}, past_prices={}, codes=[]):
         """Constructor for the StatBot class

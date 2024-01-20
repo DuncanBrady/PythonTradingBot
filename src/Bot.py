@@ -9,11 +9,7 @@ import requests
 import time
 import datetime
 import calendar
-import sys
-from src.StatBot import StatBot
-
-sys.path.append("..")
-
+from StatBot import StatBot
 
 TIME = 0
 OPEN = 1
@@ -26,7 +22,7 @@ BUY = 1
 SELL = 0
 
 
-class Bot:
+class Bot():
     def __init__(self, balance=0.0,
                  stop_loss=.125,
                  profit_take=1.25,
@@ -39,7 +35,7 @@ class Bot:
         self.profit_take = profit_take
         self.position = position
         self.POSITION_LIMIT = position_limit
-        self.statbot = StatBot(codes=codes)
+        self.stat_bot = StatBot(codes=codes)
         self.buying = []
         self.selling = []
 
@@ -222,14 +218,14 @@ class Bot:
                 to_sell.append(my_position)
                 # rank the coin based on the gain of selling
                 rank_dict[my_position['code']] = bought_value - actual_value
-            elif data[my_position["code"]]["close"] >= self.calc_bands(my_position["code"])[1] and self.statbot.get_rsi(my_position["code"]) >= 70:
+            elif data[my_position["code"]]["close"] >= self.calc_bands(my_position["code"])[1] and self.stat_bot.get_rsi(my_position["code"]) >= 70:
                 diff = abs(data[my_position["code"]]["close"] - self.calc_bands(my_position["code"])[1])
                 to_sell.append(my_position)
                 # Rank based on the score calculated using bands and rsi
                 rank_dict[my_position['code']] = \
                     self.get_score(
                         SELL,
-                        self.statbot.get_rsi(my_position['code']),
+                        self.stat_bot.get_rsi(my_position['code']),
                         diff)
 
         for my_position in to_sell:
@@ -293,7 +289,7 @@ class Bot:
         Processes prices from api call
         """
         data = self.build_data()
-        self.statbot.process_incoming(data)
+        self.stat_bot.process_incoming(data)
         self.update_current_prices(self.format_data(data))
         self.check_sell(data)
         self.check_buy(data)
@@ -327,7 +323,7 @@ class Bot:
                     data[key]['close'] - self.calc_bands(key)[0]
                 )
                 if data[key]["close"] < self.calc_bands(key)[0] \
-                   and self.statbot.get_rsi(key) <= 30:
+                   and self.stat_bot.get_rsi(key) <= 30:
                     # Access exchange api to purchase more stock
                     self.add_buy(
                         key,
@@ -337,7 +333,7 @@ class Bot:
                     rank_dict[key] = \
                         self.get_score(
                             BUY,
-                            self.statbot.get_rsi(key),
+                            self.stat_bot.get_rsi(key),
                             diff
                         )
 
@@ -365,31 +361,3 @@ class Bot:
 
     def calc_bands(self, position):
         return self.stat_bot.calc_bands(position)
-
-
-if __name__ == "__main__":
-
-    bot = Bot(balance=1000.0, codes=['XXBTZ', 'XETHZ', 'ADA', 'XXRPZ'])
-    output_file = open("output.txt", "w")
-
-    while True:
-        bot.process_data()
-        print(f"Bots current balance: {bot.get_balance()}")
-        print(f"Bots total value of digital assets: {bot.get_ttlval_pos()}")
-        print(f"Bots current position: {bot.get_position()}")
-        print("Prices")
-        print("-" * 20)
-        print(f"BTC {bot.statbot.get_price('XXBTZ')}")
-        print(f"ADA {bot.statbot.get_price('ADA')}")
-        print(f"ETH {bot.statbot.get_price('XETHZ')}")
-        print(f"XRP {bot.statbot.get_price('XXRPZ')}")
-        print("-" * 20)
-
-        output_file.write(
-            f"Current Time: {datetime.datetime.now()}\n"
-            f"Bots current balance: {bot.get_balance()}\n"
-            f"Bots total value of digital assets: {bot.get_ttlval_pos()}\n"
-            f"Bots current position: {bot.get_position()}\n"
-            "----------------------------------------\n"
-        )
-        time.sleep(30)

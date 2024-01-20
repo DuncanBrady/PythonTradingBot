@@ -3,7 +3,6 @@ import sys
 import random
 import numpy as np
 from src.StatBot import StatBot
-sys.path.append("..")
 
 
 class TestStatBot(unittest.TestCase):

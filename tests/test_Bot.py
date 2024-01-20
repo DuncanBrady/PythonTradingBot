@@ -1,7 +1,5 @@
 import unittest
-import sys
 from src.Bot import Bot
-sys.path.append("..")
 
 
 class TestBot(unittest.TestCase):
@@ -44,7 +42,6 @@ class TestBot(unittest.TestCase):
         bot = Bot(balance=1000, position=[])
         with self.assertRaises(Exception):
             bot.sell("EXR", 2.00)
-
 
     def test_process_data(self):
         bot = Bot(balance=1000, position=[])
