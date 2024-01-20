@@ -9,7 +9,7 @@ import requests
 import time
 import datetime
 import calendar
-from StatBot import StatBot
+from src.StatBot import StatBot
 
 TIME = 0
 OPEN = 1
