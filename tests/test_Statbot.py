@@ -24,36 +24,36 @@ class TestStatBot(unittest.TestCase):
 
 
     def test_get_price(self):
-    data = {
-        "EXR": {
-            "open": 1.00,
-            "high": 2.00,
-            "close": 1.5,
-            "volume": 2000000,
-            "low": 0
-        },
+        data = {
+            "EXR": {
+                "open": 1.00,
+                "high": 2.00,
+                "close": 1.5,
+                "volume": 2000000,
+                "low": 0
+            },
 
-        "TRT": {
-            "open": 1.14,
-            "high": 1.20,
-            "close": 90,
-            "volume": 1000,
-            "low": 0
-        },
+            "TRT": {
+                "open": 1.14,
+                "high": 1.20,
+                "close": 90,
+                "volume": 1000,
+                "low": 0
+            },
 
-        "APPL": {
-            "open": 145.00,
-            "high": 150.00,
-            "close": 145.00,
-            "volume": 4350060,
-            "low": 0
+            "APPL": {
+                "open": 145.00,
+                "high": 150.00,
+                "close": 145.00,
+                "volume": 4350060,
+                "low": 0
+            }
         }
-    }
 
-    stockcodes = ["APPL", "TRT", "EXR"]
-    stat = StatBot(codes=stockcodes)
-    stat.process_incoming(data)
-    self.assertEqual(stat.get_price("EXR"), {"open": [1.0], "high": [2.0], "close": [1.5], "low": [0]})
+        stockcodes = ["APPL", "TRT", "EXR"]
+        stat = StatBot(codes=stockcodes)
+        stat.process_incoming(data)
+        self.assertEqual(stat.get_price("EXR"), {"open": [1.0], "high": [2.0], "close": [1.5], "low": [0]})
 
 
     def test_mv_avg(self):
