@@ -21,15 +21,12 @@ First attempt at a trading bot
     -   if a candle is outside the upper bollinger band AND rsi < 30, sell
 
 
-## Design/Process
-  - 
-
 API Call( every minute for example) -> bot -> bot.statBot -> statBot stores it (past five data calls are stored) -> statBot creates bolinger bands and returns them
 
 ### Data Models
 
 ### StatBot
-Attributes  
+Attributes
   - optionOne
     - dict = { "stockcode" : { "upperBand", "lowerBand", mvAVg, "pastPrices" : [] }}
   - optionTwo
@@ -43,7 +40,7 @@ Attributes
     - Bolinger Bands
     - RSI Calculations
 Written: August 2021
-Author: Robert Brady & Luke Banicevic 
+Author: Robert Brady & Luke Banicevic
 '''
 
 class StatBot:
@@ -59,4 +56,3 @@ class StatBot:
                 self.past_prices[str(key)] = []
                 self.RSI[str(key)] = 0.0
 
-    def          

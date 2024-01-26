@@ -5,7 +5,10 @@ from src.Bot import Bot
 if __name__ == "__main__":
 
     bot = Bot(balance=1000.0, codes=['XXBTZ', 'XETHZ', 'ADA', 'XXRPZ'])
-    output_file = open("output.txt", "w")
+    curr_date_time = datetime.datetime.now()
+    formatted_date_time = curr_date_time.strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"logs/output{formatted_date_time}.txt"
+    output_file = open(filename, "w")
 
     while True:
         bot.process_data()
