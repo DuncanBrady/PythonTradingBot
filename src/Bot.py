@@ -5,10 +5,6 @@
     Date: 18/09/2021
 '''
 
-import requests
-import time
-import datetime
-import calendar
 from src.StatBot import StatBot
 
 TIME = 0
@@ -140,7 +136,7 @@ class Bot():
 
         return data
 
-    def add_buy(self, code, price, money_invested, score):
+    def buy(self, code, price, money_invested):
         """Buys a particular stock code at a given price
 
         Args:
@@ -162,13 +158,18 @@ class Bot():
         share_object = [x for x in self.get_position() if x['code'] == code]
 
         if len(share_object) == 0:
+            new_position_object = self.create_position_object(
+                code,
+                price,
+                money_invested
+            )
             self.position.append(
                 self.create_position_object(code, price, money_invested)
             )
+            self.buying.append(new_position_object)
         else:
             self.update_position_object(share_object[0], price, money_invested)
-        # Append Buy to buying list
-        self.buying.append(share_object[0])
+            self.buying.append(share_object[0])
 
     def update_current_prices(self, data):
         """Updates the current prices of stocks in the bots position
@@ -235,7 +236,7 @@ class Bot():
             # Sorts buying based on value of rank
             self.selling.sort(key=lambda x: rank_dict[x['code']])
 
-    def add_sell(self, code, sell_price):
+    def sell(self, code, sell_price):
         """Sells a particular stock at a given sell price
 
         Args:
@@ -254,35 +255,6 @@ class Bot():
 
         # Add object to sell list for next order
         self.selling.append(sell_object)
-
-    def call_api(self, crypto="ADA"):
-        """Makes a periodic request to some api to get stock information
-
-        Args:
-            url (string): url of the given api
-        """
-        now = datetime.datetime.utcnow()
-
-        end = calendar.timegm(now.timetuple()) * 1000
-
-        CANDLE_DATA = "https://api.kraken.com/0/public/OHLC"
-        pair = f'{crypto}USD'
-        PARAMS = {
-            'pair': pair,
-            'interval': '1',
-            'since': end
-        }
-
-        response = requests.get(url=CANDLE_DATA, params=PARAMS)
-
-        while response.status_code != 200:
-            time.sleep(2)
-            response = requests.get(url=CANDLE_DATA, params=PARAMS)
-
-        # Get the most important information from the response received
-        data = response.json().get('result').get(pair)[0]
-
-        return data
 
     def process_data(self):
         """
@@ -325,7 +297,7 @@ class Bot():
                 if data[key]["close"] < self.calc_bands(key)[0] \
                    and self.stat_bot.get_rsi(key) <= 30:
                     # Access exchange api to purchase more stock
-                    self.add_buy(
+                    self.buy(
                         key,
                         data[key]["close"],
                         self.get_buy_amount()
@@ -355,9 +327,6 @@ class Bot():
             return band_diff/rsi
         elif scoretype == SELL:
             return 1/(rsi * band_diff)
-
-    def send_order():
-        pass
 
     def calc_bands(self, position):
         return self.stat_bot.calc_bands(position)

@@ -51,7 +51,10 @@ class TestStatBot(unittest.TestCase):
         stockcodes = ["APPL", "TRT", "EXR"]
         stat = StatBot(codes=stockcodes)
         stat.process_incoming(data)
-        self.assertEqual(stat.get_price("EXR"), {"open": [1.0], "high": [2.0], "close": [1.5], "low": [0]})
+        self.assertEqual(
+            stat.get_price("EXR"),
+            {"open": [1.0], "high": [2.0], "close": [1.5], "low": [0]}
+        )
 
     def test_mv_avg(self):
         data = {
@@ -126,7 +129,10 @@ class TestStatBot(unittest.TestCase):
             data["EXR"]['close'] = num
             stat.process_incoming(data)
 
-        self.assertEqual(stat.get_mv_avg("EXR"), sum(prices2) / len(prices2))
+        self.assertEqual(
+            stat.get_mv_avg("EXR"),
+            (sum(prices2 + prices1)) / (len(prices2) + len(prices1))
+        )
 
     def test_calc_bands(self):
         stockcodes = ["EXR"]
@@ -160,17 +166,21 @@ class TestStatBot(unittest.TestCase):
 
     def test_calc_rsi(self):
         bot = StatBot(codes=["EXR"], rsi={}, past_prices={})
+
         prices = [1.5, 2.0, 1.75, 1.3, 1.8]
         for price in prices:
             bot.past_prices["EXR"]["close"].insert(0, price)
             bot.rsi_calc("EXR")
-            self.assertEqual(round(bot.get_rsi("EXR"), 2), 41.18)
-            prices = [6001, 7550, 4431, 9435, 8453]
-            bot.past_prices["EXR"]["close"] = []
+
+        self.assertEqual(round(bot.get_rsi("EXR"), 2), 41.18)
+
+        bot.past_prices["EXR"]["close"] = []
+        prices = [6001, 7550, 4431, 9435, 8453]
         for price in prices:
             bot.past_prices["EXR"]["close"].insert(0, price)
             bot.rsi_calc("EXR")
-            self.assertEqual(round(bot.get_rsi("EXR"), 2), 38.49)
+
+        self.assertEqual(round(bot.get_rsi("EXR"), 2), 38.49)
 
 
 if __name__ == '__main__':

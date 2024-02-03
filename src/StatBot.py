@@ -14,10 +14,10 @@ class StatBot():
     def __init__(self, mv_avg={}, rsi={}, past_prices={}, codes=[]):
         """Constructor for the StatBot class
         Args:
-            mv_avg (dict, optional): Stores the moving averages for all stock codes. Defaults to {}.
-            rsi (dict, optional): Stores the rsi's for all stock codes . Defaults to {}.
-            past_prices (dict, optional): Stores the past prices of the monitored stock codes. Defaults to {}.
-            codes (list, optional): Stock codes which are set to be monitored. Defaults to [].
+            mv_avg (dict, optional): Stores moving averages for all codes
+            rsi (dict, optional): Stores rsi's for all stock codes
+            past_prices (dict, optional): Stores past prices of monitored codes
+            codes (list, optional): Stock codes which are set to be monitored
         """
         self.mv_avg = mv_avg
         self.past_prices = past_prices
@@ -46,8 +46,8 @@ class StatBot():
 
     def calc_bands(self, code):
         """Calculates upper and lower bolinger band values for a given stock
-        bolinger bands represent a set number of standard deviations above or below the moving average
-        close
+        bolinger bands represent a set number of standard deviations above
+        or below the moving average close
         Args:
             code (string): code for the given stock in question
         """
@@ -91,10 +91,12 @@ class StatBot():
         Args:
             code (string): stock code being updated
         """
-        try:
+
+        if len(self.get_price(code)['close']) >= 2:
             diff = self.get_price(code)['close'][0] - self.get_price(code)['close'][1]
-        except Exception:
+        else:
             diff = 0
+
         if diff > 0:
             self.rsi[code]['up_moves'].insert(0, diff)
         elif diff < 0:
