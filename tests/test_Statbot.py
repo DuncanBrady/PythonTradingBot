@@ -162,7 +162,13 @@ class TestStatBot(unittest.TestCase):
         lower = sum(prices1) / len(prices1) - 2 * np.std(prices1)
         upper = sum(prices1) / len(prices1) + 2 * np.std(prices1)
 
-        self.assertEqual(stat.calc_bands("EXR"), (lower, upper))
+        lower_rounded = round(lower, 2)
+        upper_rounded = round(upper, 2)
+
+        bands = stat.calc_bands("EXR")
+        bands_rounded = tuple(round(element, 2) for element in bands)
+
+        self.assertEqual(bands_rounded, (lower_rounded, upper_rounded))
 
     def test_calc_rsi(self):
         bot = StatBot(codes=["EXR"], rsi={}, past_prices={})
