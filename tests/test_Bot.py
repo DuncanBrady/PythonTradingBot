@@ -47,8 +47,6 @@ class TestBot(unittest.TestCase):
         bot = Bot(balance=1000, position=[])
         bot.buy("APPL", 130.00, 1000)
 
-        bot.call_api()
-
         self.assertEqual(bot.get_position()[0], {
             "code": "APPL",
             "current_price": 130.00,
