@@ -12,19 +12,19 @@ OPEN = 1
 HIGH = 2
 LOW = 3
 CLOSE = 4
-VWAP = 5
-VOL = 6
 BUY = 1
 SELL = 0
 
 
 class Bot():
-    def __init__(self, balance=0.0,
+    def __init__(self,
+                 balance=0.0,
                  stop_loss=.125,
                  profit_take=1.25,
                  position=[],
                  position_limit=10,
                  codes=[]):
+
         self.codes = codes
         self.balance = balance
         self.stop_loss = stop_loss
@@ -38,20 +38,12 @@ class Bot():
     '''
         Getters and Setters
     '''
-    def set_stop_loss(self, stop_loss):
-        self.stop_loss = stop_loss
 
     def set_balance(self, balance):
         self.balance = balance
 
-    def set_position(self, position):
-        self.position = position
-
     def get_balance(self):
         return self.balance
-
-    def get_stop_loss(self):
-        return self.stop_loss
 
     def get_position(self):
         return self.position
@@ -274,17 +266,6 @@ class Bot():
         Args:
             data (dict/json): Object with stock information at a certain time
         """
-        for my_position in self.position:
-            high_price = data[my_position['code']]['high']
-            value_that_we_have = my_position['value']
-
-            # if one of our stocks has dropped by 5%, buy more
-            if value_that_we_have * .95 >= high_price:
-                self.buy(
-                    my_position['code'],
-                    high_price,
-                    my_position['total_invested'] * 0.025
-                )
 
         rank_dict = {}
         # check for new stock
@@ -330,3 +311,6 @@ class Bot():
 
     def calc_bands(self, position):
         return self.stat_bot.calc_bands(position)
+
+    def call_api(self):
+        return {}

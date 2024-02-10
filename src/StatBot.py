@@ -6,24 +6,23 @@ Written: August 2021
 Author: Robert Brady & Luke Banicevic
 '''
 
-import numpy as np
+from numpy import std
 
 
 class StatBot():
 
-    def __init__(self, mv_avg={}, rsi={}, past_prices={}, codes=[]):
+    def __init__(self, moving_average={}, rsi={}, past_prices={}, codes=[]):
         """Constructor for the StatBot class
         Args:
-            mv_avg (dict, optional): Stores moving averages for all codes
+            moving_average (dict, optional): Stores moving averages codes
             rsi (dict, optional): Stores rsi's for all stock codes
             past_prices (dict, optional): Stores past prices of monitored codes
             codes (list, optional): Stock codes which are set to be monitored
         """
-        self.mv_avg = mv_avg
+        self.moving_average = moving_average
         self.past_prices = past_prices
         self.rsi = rsi
-        if codes is not None:
-            self.build_dicts(codes)
+        self.build_dicts(codes)
 
     def build_dicts(self, codes):
         """Builds the statsbots collection of data as stock codes as keys
@@ -31,7 +30,7 @@ class StatBot():
             codes (list[string]): List of Stock codes which are being monitored
         """
         for key in codes:
-            self.mv_avg[str(key)] = 0.0
+            self.moving_average[str(key)] = 0.0
             self.past_prices[str(key)] = {
                 "open": [],
                 "high": [],
@@ -56,13 +55,16 @@ class StatBot():
         past_prices = self.get_price(code)
 
         # Calculate the standard deviation
-        std = np.std(past_prices['close'])
+        standard_dev = std(past_prices['close'])
 
         # Retrieve the moving average
-        mv_avg = self.get_mv_avg(code)
+        moving_average = self.get_moving_average(code)
 
         # return tuple of upper and lower values
-        return (mv_avg - 2*std, mv_avg + 2*std)
+        return (
+            moving_average - 2*standard_dev,
+            moving_average + 2*standard_dev
+        )
 
     def rsi_calc(self, code):
         """Calculates the rsi of a stock given its average up/down moves
@@ -73,17 +75,19 @@ class StatBot():
         self.rsi_update_moves(code)
 
         # rsi calculation
-        avg_up = abs(
-            sum(self.rsi[code]['up_moves']) / len(self.rsi[code]['up_moves'])
-        )
-        avg_down = abs(
-            sum(self.rsi[code]['down_moves']) / len(self.rsi[code]['down_moves'])
-        )
-        if avg_up == 0:
-            avg_up = 1
-        rs = avg_down/avg_up
+        sum_of_up_moves = sum(self.rsi[code]['up_moves'])
+        num_of_up_moves = len(self.rsi[code]['up_moves'])
+        average_up_moves = abs(sum_of_up_moves / num_of_up_moves)
+
+        sum_of_down_moves = sum(self.rsi[code]['down_moves'])
+        num_of_down_moves = len(self.rsi[code]['down_moves'])
+        average_down_moves = abs(sum_of_down_moves / num_of_down_moves)
+
+        average_up_moves = 1 if average_up_moves == 0 else average_up_moves
+        rs = average_down_moves/average_up_moves
         rsi = 100 - 100/(1+rs)
-        self.set_rsi(code, rsi)
+        if self.rsi.get(code, None):
+            self.rsi.get(code)['rsi'] = rsi
 
     def rsi_update_moves(self, code):
         """Updates the list of up and down moves for a stock in a given period
@@ -128,7 +132,7 @@ class StatBot():
             old_prices['high'] = old_prices['high'][:14]
             old_prices['low'] = old_prices['low'][:14]
 
-    def update_mv_avg(self, code):
+    def update_moving_average(self, code):
         """Updates the mv avg for a stock code
 
         Args:
@@ -136,8 +140,10 @@ class StatBot():
         """
 
         # New mvg average = sum of the close prices / by # prices stored
-        new_mv_avg = sum(self.get_price(code)['close']) / len(self.get_price(code)['close'])
-        self.set_mv_avg(code, new_mv_avg)
+        sum_of_close_prices = sum(self.get_price(code)['close'])
+        num_prices_stored = len(self.get_price(code)['close'])
+
+        self.moving_average[code] = sum_of_close_prices / num_prices_stored
 
     def process_incoming(self, incoming_data):
         """Process incoming stock codes and their corresponding price actions
@@ -145,24 +151,13 @@ class StatBot():
         Args:
             incoming_data (dict): data of stock codes and price information
         """
-        # print(incoming_data)
         for key in incoming_data:
             self.update_prices(key, incoming_data.get(key))
-            self.update_mv_avg(key)
+            self.update_moving_average(key)
             self.rsi_calc(key)
 
-    '''
-        Getters and Setters
-    '''
-    def set_mv_avg(self, code, mv_avg):
-        self.mv_avg[code] = mv_avg
-
-    def set_rsi(self, code, rsi):
-        if self.rsi.get(code, None) is not None:
-            self.rsi.get(code)['rsi'] = rsi
-
-    def get_mv_avg(self, code):
-        return self.mv_avg.get(code, None)
+    def get_moving_average(self, code):
+        return self.moving_average.get(code, None)
 
     def get_price(self, code):
         return self.past_prices.get(code, None)
