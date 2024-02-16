@@ -6,6 +6,7 @@
 '''
 
 from src.StatBot import StatBot
+from src.AccountsModule import AccountsModule
 
 TIME = 0
 OPEN = 1
@@ -22,16 +23,14 @@ class Bot():
                  stop_loss=.125,
                  profit_take=1.25,
                  position=[],
-                 position_limit=10,
-                 codes=[]):
+                 tickers=[]):
 
-        self.codes = codes
-        self.balance = balance
+        self.tickers = tickers
         self.stop_loss = stop_loss
         self.profit_take = profit_take
         self.position = position
-        self.POSITION_LIMIT = position_limit
-        self.stat_bot = StatBot(codes=codes)
+        self.stat_bot = StatBot(tickers=tickers)
+        self.accounts_module = AccountsModule()
         self.buying = []
         self.selling = []
 
@@ -46,10 +45,10 @@ class Bot():
         return self.balance
 
     def get_position(self):
-        return self.position
+        return self.accounts_modules.position
 
-    def get_codes(self):
-        return self.codes
+    def get_tickers(self):
+        return self.tickers
 
     '''
         Static methods
@@ -67,7 +66,7 @@ class Bot():
         list_data = []
         for key in data:
             stock_object = {
-                "code": key,
+                "ticker": key,
                 "price": data[key]['close']
             }
 
@@ -76,11 +75,11 @@ class Bot():
         return list_data
 
     @staticmethod
-    def create_position_object(code, price, money_invested):
+    def create_position_object(ticker, price, money_invested):
         """Creates a new position object for a given stock bought
 
         Args:
-            code (string): Code of the given stock
+            ticker (string): ticker of the given stock
             price (double ): price of the given stock
             money_invested (double): money invested to buy the given stock
 
@@ -88,7 +87,7 @@ class Bot():
             dict: position object
         """
         return {
-            "code": code,
+            "ticker": ticker,
             "current_price": price,
             "value": price,
             "num_shares": money_invested / price,
@@ -113,13 +112,12 @@ class Bot():
         """Builds the data used by the bot into the correct format
 
         Returns:
-            dict: Dictionary containing codes and price objects
+            dict: Dictionary containing tickers and price objects
         """
         data = {}
-        for code in self.get_codes():
-            value = self.call_api(crypto=code)
-            data[code] = {
-
+        for ticker in self.get_tickers():
+            value = self.call_api(crypto=ticker)
+            data[ticker] = {
                 'open': float(value[OPEN]),
                 'high': float(value[HIGH]),
                 'low': float(value[LOW]),
@@ -128,11 +126,11 @@ class Bot():
 
         return data
 
-    def buy(self, code, price, money_invested):
-        """Buys a particular stock code at a given price
+    def buy(self, ticker, price, money_invested):
+        """Buys a particular stock ticker at a given price
 
         Args:
-            code (string): Code of the given stock
+            ticker (string): ticker of the given stock
             price (double): price of the given stock
             money_invested (double): money which is being invested
 
@@ -146,17 +144,17 @@ class Bot():
 
         self.set_balance(self.get_balance() - money_invested)
 
-        # if the code is already in the list, try and find it
-        share_object = [x for x in self.get_position() if x['code'] == code]
+        # if the ticker is already in the list, try and find it
+        share_object = [x for x in self.get_position() if x['ticker'] == ticker]
 
         if len(share_object) == 0:
             new_position_object = self.create_position_object(
-                code,
+                ticker,
                 price,
                 money_invested
             )
             self.position.append(
-                self.create_position_object(code, price, money_invested)
+                self.create_position_object(ticker, price, money_invested)
             )
             self.buying.append(new_position_object)
         else:
@@ -170,10 +168,10 @@ class Bot():
             data (list[dict]): Assuming this is a list of dictionaries
         """
         for stock in data:
-            code = stock['code']
+            ticker = stock['ticker']
             current_price = stock['price']
             for my_position in self.position:
-                if my_position['code'] == code:
+                if my_position['ticker'] == ticker:
                     my_position['current_price'] = current_price
 
     def get_ttlval_pos(self):
@@ -206,36 +204,36 @@ class Bot():
                 to_sell.append(my_position)
                 # Rank the coin based on distance from bought value to ensure
                 # priority over other sell conditions
-                rank_dict[my_position['code']] = actual_value - bought_value
+                rank_dict[my_position['ticker']] = actual_value - bought_value
             elif bought_value * self.profit_take <= actual_value:
                 to_sell.append(my_position)
                 # rank the coin based on the gain of selling
-                rank_dict[my_position['code']] = bought_value - actual_value
-            elif data[my_position["code"]]["close"] >= self.calc_bands(my_position["code"])[1] and self.stat_bot.get_rsi(my_position["code"]) >= 70:
-                diff = abs(data[my_position["code"]]["close"] - self.calc_bands(my_position["code"])[1])
+                rank_dict[my_position['ticker']] = bought_value - actual_value
+            elif data[my_position["ticker"]]["close"] >= self.get_upper_bollinger(my_position["ticker"]) and self.stat_bot.get_rsi(my_position["ticker"]) >= 70:
+                diff = abs(data[my_position["ticker"]]["close"] - self.get_upper_bollinger(my_position["ticker"]))
                 to_sell.append(my_position)
                 # Rank based on the score calculated using bands and rsi
-                rank_dict[my_position['code']] = \
+                rank_dict[my_position['ticker']] = \
                     self.get_score(
                         SELL,
-                        self.stat_bot.get_rsi(my_position['code']),
+                        self.stat_bot.get_rsi(my_position['ticker']),
                         diff)
 
         for my_position in to_sell:
-            self.sell(my_position['code'], my_position['current_price'])
+            self.sell(my_position['ticker'], my_position['current_price'])
 
         if len(self.selling) != 0:
             # Sorts buying based on value of rank
-            self.selling.sort(key=lambda x: rank_dict[x['code']])
+            self.selling.sort(key=lambda x: rank_dict[x['ticker']])
 
-    def sell(self, code, sell_price):
+    def sell(self, ticker, sell_price):
         """Sells a particular stock at a given sell price
 
         Args:
-            code (string): Code of the given stock
+            ticker (string): ticker of the given stock
             sell_price (double): Sell price of the given stock
         """
-        sell_object = [x for x in self.get_position() if x['code'] == code][0]
+        sell_object = [x for x in self.get_position() if x['ticker'] == ticker][0]
         if sell_object is None:
             raise Exception("Stock not in position")
 
@@ -269,31 +267,32 @@ class Bot():
 
         rank_dict = {}
         # check for new stock
-        for key in data:
-            # if key doesnt exist in position
-            if not any(key in pos for pos in self.position):
+        for ticker in data:
+            # if ticker doesnt exist in position
+            # call to accounts here will return nothing, therefore we buy
+            if not any(ticker in pos for pos in self.position):
                 diff = abs(
-                    data[key]['close'] - self.calc_bands(key)[0]
+                    data[ticker]['close'] - self.get_lower_bollinger(ticker)
                 )
-                if data[key]["close"] < self.calc_bands(key)[0] \
-                   and self.stat_bot.get_rsi(key) <= 30:
+                if data[ticker]["close"] < self.get_lower_bollinger(ticker) \
+                   and self.stat_bot.get_rsi(ticker) <= 30:
                     # Access exchange api to purchase more stock
                     self.buy(
-                        key,
-                        data[key]["close"],
+                        ticker,
+                        data[ticker]["close"],
                         self.get_buy_amount()
                     )
-                    rank_dict[key] = \
+                    rank_dict[ticker] = \
                         self.get_score(
                             BUY,
-                            self.stat_bot.get_rsi(key),
+                            self.stat_bot.get_rsi(ticker),
                             diff
                         )
 
         # check if buying any
         if len(self.buying) != 0:
             # sorts buying based on value of rank
-            self.buying.sort(key=lambda x: -rank_dict[x['code']])
+            self.buying.sort(key=lambda x: -rank_dict[x['ticker']])
 
     def get_buy_amount(self):
         """Returns a buy amount as a function of the bots current balance
@@ -309,8 +308,13 @@ class Bot():
         elif scoretype == SELL:
             return 1/(rsi * band_diff)
 
-    def calc_bands(self, position):
-        return self.stat_bot.calc_bands(position)
+    def get_upper_bollinger(self, position):
+        bollinger_bands = self.stat_bot.calc_bands(position)
+        return bollinger_bands["upper_bollinger"]
+
+    def get_lower_bollinger(self, position):
+        bollinger_bands = self.stat_bot.calc_bands(position)
+        return bollinger_bands["lower_bollinger"]
 
     def call_api(self):
         return {}

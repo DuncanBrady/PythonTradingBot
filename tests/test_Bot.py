@@ -9,7 +9,7 @@ class TestBot(unittest.TestCase):
         bot.buy("EXR", 1.00, 500)
         self.assertEqual(bot.get_balance(), 500)
         self.assertEqual(bot.get_position(), [{
-            "code": "EXR",
+            "ticker": "EXR",
             "current_price": 1.00,
             "value": 1.00,
             "num_shares": 500,
@@ -48,7 +48,7 @@ class TestBot(unittest.TestCase):
         bot.buy("APPL", 130.00, 1000)
 
         self.assertEqual(bot.get_position()[0], {
-            "code": "APPL",
+            "ticker": "APPL",
             "current_price": 130.00,
             "value": 130.00,
             "num_shares": 1000/130,

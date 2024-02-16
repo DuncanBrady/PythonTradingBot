@@ -7,19 +7,19 @@ from src.StatBot import StatBot
 class TestStatBot(unittest.TestCase):
 
     def test_constructor(self):
-        stockcodes = ["TST", "ISA", "EXR"]
-        stat = StatBot(codes=stockcodes)
-        for code in stockcodes:
-            self.assertEqual(stat.get_mv_avg(code), 0.0)
-            self.assertEqual(stat.get_rsi(code), 0.0)
+        stocktickers = ["TST", "ISA", "EXR"]
+        stat = StatBot(tickers=stocktickers)
+        for ticker in stocktickers:
+            self.assertEqual(stat.get_mv_avg(ticker), 0.0)
+            self.assertEqual(stat.get_rsi(ticker), 0.0)
             self.assertEqual(
-                stat.get_price(code),
+                stat.get_price(ticker),
                 {"open": [], "high": [], "close": [], "low": []}
             )
 
     def test_get_rsi(self):
-        stockcodes = ["APPL", "TSLA", "EXR"]
-        stat = StatBot(codes=stockcodes)
+        stocktickers = ["APPL", "TSLA", "EXR"]
+        stat = StatBot(tickers=stocktickers)
         stat.set_rsi("EXR", 34.00)
         self.assertEqual(stat.get_rsi("EXR"), 34.00)
 
@@ -48,8 +48,8 @@ class TestStatBot(unittest.TestCase):
             }
         }
 
-        stockcodes = ["APPL", "TRT", "EXR"]
-        stat = StatBot(codes=stockcodes)
+        stocktickers = ["APPL", "TRT", "EXR"]
+        stat = StatBot(tickers=stocktickers)
         stat.process_incoming(data)
         self.assertEqual(
             stat.get_price("EXR"),
@@ -87,8 +87,8 @@ class TestStatBot(unittest.TestCase):
             }
         }
 
-        stockcodes = ["APPL", "TRT", "EXR"]
-        stat = StatBot(codes=stockcodes)
+        stocktickers = ["APPL", "TRT", "EXR"]
+        stat = StatBot(tickers=stocktickers)
 
         stat.process_incoming(data)
         self.assertEqual(stat.get_mv_avg("EXR"), 1.5)
@@ -100,8 +100,8 @@ class TestStatBot(unittest.TestCase):
         self.assertEqual(stat.get_mv_avg("EXR"), 6.5 / 3)
 
     def test_heaps_prices(self):
-        stockcodes = ["APPL", "TRT", "EXR"]
-        stat = StatBot(codes=stockcodes)
+        stocktickers = ["APPL", "TRT", "EXR"]
+        stat = StatBot(tickers=stocktickers)
 
         data = {
             "EXR": {
@@ -135,8 +135,8 @@ class TestStatBot(unittest.TestCase):
         )
 
     def test_calc_bands(self):
-        stockcodes = ["EXR"]
-        stat = StatBot(codes=stockcodes)
+        stocktickers = ["EXR"]
+        stat = StatBot(tickers=stocktickers)
 
         data = {
             "EXR": {
@@ -171,7 +171,7 @@ class TestStatBot(unittest.TestCase):
         self.assertEqual(bands_rounded, (lower_rounded, upper_rounded))
 
     def test_calc_rsi(self):
-        bot = StatBot(codes=["EXR"], rsi={}, past_prices={})
+        bot = StatBot(tickers=["EXR"], rsi={}, past_prices={})
 
         prices = [1.5, 2.0, 1.75, 1.3, 1.8]
         for price in prices:
