@@ -10,7 +10,7 @@ class TestStatBot(unittest.TestCase):
         stocktickers = ["TST", "ISA", "EXR"]
         stat = StatBot(tickers=stocktickers)
         for ticker in stocktickers:
-            self.assertEqual(stat.get_mv_avg(ticker), 0.0)
+            self.assertEqual(stat.get_moving_average(ticker), 0.0)
             self.assertEqual(stat.get_rsi(ticker), 0.0)
             self.assertEqual(
                 stat.get_price(ticker),
@@ -91,13 +91,13 @@ class TestStatBot(unittest.TestCase):
         stat = StatBot(tickers=stocktickers)
 
         stat.process_incoming(data)
-        self.assertEqual(stat.get_mv_avg("EXR"), 1.5)
+        self.assertEqual(stat.get_moving_average("EXR"), 1.5)
 
         stat.process_incoming(data2)
-        self.assertEqual(stat.get_mv_avg("EXR"), 1.75)
+        self.assertEqual(stat.get_moving_average("EXR"), 1.75)
 
         stat.process_incoming(data3)
-        self.assertEqual(stat.get_mv_avg("EXR"), 6.5 / 3)
+        self.assertEqual(stat.get_moving_average("EXR"), 6.5 / 3)
 
     def test_heaps_prices(self):
         stocktickers = ["APPL", "TRT", "EXR"]
@@ -123,14 +123,14 @@ class TestStatBot(unittest.TestCase):
             data["EXR"]['close'] = num
             stat.process_incoming(data)
 
-        self.assertEqual(stat.get_mv_avg("EXR"), sum(prices1) / len(prices1))
+        self.assertEqual(stat.get_moving_average("EXR"), sum(prices1) / len(prices1))
 
         for num in prices2:
             data["EXR"]['close'] = num
             stat.process_incoming(data)
 
         self.assertEqual(
-            stat.get_mv_avg("EXR"),
+            stat.get_moving_average("EXR"),
             (sum(prices2 + prices1)) / (len(prices2) + len(prices1))
         )
 
@@ -166,7 +166,7 @@ class TestStatBot(unittest.TestCase):
         upper_rounded = round(upper, 2)
 
         bands = stat.calc_bands("EXR")
-        bands_rounded = tuple(round(element, 2) for element in bands)
+        bands_rounded = tuple(round(element, 2) for element in bands.values())
 
         self.assertEqual(bands_rounded, (lower_rounded, upper_rounded))
 

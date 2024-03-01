@@ -60,7 +60,7 @@ class StatBot():
         # Retrieve the moving average
         moving_average = self.get_moving_average(ticker)
 
-        # return tuple of upper and lower values
+        # return object of upper and lower values
         return {
             "lower_bollinger": moving_average - 2*standard_dev,
             "upper_bollinger": moving_average + 2*standard_dev
@@ -164,3 +164,6 @@ class StatBot():
 
     def get_rsi(self, ticker):
         return self.rsi.get(ticker, None).get('rsi')
+
+    def set_rsi(self, ticker, value):
+        self.rsi[ticker]['rsi'] = value
